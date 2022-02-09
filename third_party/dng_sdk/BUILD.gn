@@ -29,6 +29,10 @@ third_party("dng_sdk") {
     "UNIX_ENV=1",
   ]
 
+  if (is_win) {
+    defines += [ "_HAS_AUTO_PTR_ETC=1" ]
+  }
+
   deps = [
     "//third_party/libjpeg-turbo:libjpeg",
     "//third_party/zlib",

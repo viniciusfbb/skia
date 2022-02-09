@@ -8,6 +8,10 @@
 
 #include "include/utils/SkParse.h"
 
+#ifdef SK4D_WORKAROUNDS
+    #include "sk4d/miscellaneous/sk4d_dtoa.h"
+#endif
+
 #include <stdlib.h>
 
 static inline bool is_between(int c, int min, int max)
@@ -204,7 +208,11 @@ const char* SkParse::FindScalar(const char str[], SkScalar* value) {
     str = skip_ws(str);
 
     char* stop;
+#ifdef SK4D_WORKAROUNDS
+    float v = (float)sk4d_strtod(str, &stop);
+#else
     float v = (float)strtod(str, &stop);
+#endif
     if (str == stop) {
         return nullptr;
     }

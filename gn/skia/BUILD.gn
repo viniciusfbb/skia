@@ -53,6 +53,14 @@ config("default") {
   ldflags = []
   libs = []
 
+  if (is_win) {
+    if (is_debug) {
+      cflags += [ "/MTd" ]
+    } else {
+      cflags += [ "/MT" ]
+    }
+  }
+
   # Disable warnings about unknown attributes.
   # (These unknown attribute warnings are on by default, so we don't make
   # disabling them part of :warnings, as some targets remove :warnings.)
@@ -235,6 +243,7 @@ config("default") {
   }
 
   if (is_linux) {
+    ldflags += [ "-static-libstdc++", "-static-libgcc" ]
     libs += [ "pthread" ]
   }
 
@@ -265,19 +274,17 @@ config("default") {
 
     # As of 11/2020, gn is an x86 binary and defaults the host_cpu to x86_64.
     # This allows you to build arm64 mac binaries by setting target_cpu = "arm64"
+    asmflags += [ "-target" ]
+    cflags += [ "-target" ]
+    ldflags += [ "-target" ]
     if (current_cpu == "arm64") {
-      asmflags += [
-        "-target",
-        "arm64-apple-macos11",
-      ]
-      cflags += [
-        "-target",
-        "arm64-apple-macos11",
-      ]
-      ldflags += [
-        "-target",
-        "arm64-apple-macos11",
-      ]
+      asmflags += [ "arm64-apple-macos11" ]
+      cflags += [ "arm64-apple-macos11" ]
+      ldflags += [ "arm64-apple-macos11" ]
+    } else {
+      asmflags += [ "x86_64-apple-macos10.9" ]
+      cflags += [ "x86_64-apple-macos10.9" ]
+      ldflags += [ "x86_64-apple-macos10.9" ]
     }
   }
 

@@ -8,6 +8,9 @@ is_skia_standalone = true
 # It's best to keep the names and defaults of is_foo flags consistent with Chrome.
 
 declare_args() {
+  sk4d_component_build = false
+  sk4d_workarounds = true
+
   is_official_build = false
   is_component_build = false
   ndk = ""
@@ -33,6 +36,8 @@ declare_args() {
   ios_min_target = ""
 }
 declare_args() {
+  sk4d_enable_assertions = !is_official_build
+
   is_debug = !is_official_build
 }
 
@@ -170,6 +175,16 @@ template("component") {
   }
 }
 
+template("sk4d_component") {
+  _component_mode = "static_library"
+  if (sk4d_component_build) {
+    _component_mode = "shared_library"
+  }
+  target(_component_mode, target_name) {
+    forward_variables_from(invoker, "*")
+  }
+}
+
 # Default configs
 default_configs = [
   "//gn/skia:default",
@@ -205,9 +220,14 @@ set_defaults("shared_library") {
 
 set_defaults("component") {
   configs = default_configs
-  if (!is_component_build) {
+}
+
+set_defaults("sk4d_component") {
+  configs = default_configs
+  if (!sk4d_component_build) {
     complete_static_lib = true
   }
+  output_prefix_override = true
 }
 
 skia_target_default_configs = []

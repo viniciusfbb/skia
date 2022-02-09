@@ -83,23 +83,19 @@ toolchain("msvc") {
   bin = "$win_vc/Tools/MSVC/$win_toolchain_version/bin/HostX64/$target_cpu"
 
   env_setup = ""
-  if (target_cpu == "x86") {
-    # Toolchain asset includes a script that configures for x86 building.
-    # We don't support x86 builds with local MSVC installations.
-    env_setup = "$shell $win_sdk/bin/SetEnv.cmd /x86 && "
-  } else if (target_cpu == "arm64") {
+  if (target_cpu == "arm64") {
     # ARM64 compiler is incomplete - it relies on DLLs located in the host toolchain directory.
     env_setup = "$shell set \"PATH=%PATH%;$win_vc\\Tools\\MSVC\\$win_toolchain_version\\bin\\HostX64\\x64\" && "
   }
 
-  cl_m32_flag = ""
+  cl_m_flag = ""
 
   if (clang_win != "") {
+    # clang-cl.exe needs to be told when targeting non-host platforms.
     if (target_cpu == "x86") {
-      # cl.exe knows implicitly by the choice of executable that it's targeting
-      # x86, but clang-cl.exe needs to be told when targeting non-host
-      # platforms. (All our builders are x86-64, so x86 is always non-host.)
-      cl_m32_flag = "-m32"
+      cl_m_flag = "-m32"
+    } else if (target_cpu == "x64") {
+      cl_m_flag = "-m64"
     }
     if (host_os == "win") {
       cl = "\"$clang_win/bin/clang-cl.exe\""
@@ -132,7 +128,7 @@ toolchain("msvc") {
     pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
     # Label names may have spaces so pdbname must be quoted.
-    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m_flag {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     depsformat = "msvc"
     outputs =
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.obj" ]
@@ -144,7 +140,7 @@ toolchain("msvc") {
     pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
     # Label names may have spaces so pdbname must be quoted.
-    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m_flag {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     depsformat = "msvc"
     outputs =
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.obj" ]

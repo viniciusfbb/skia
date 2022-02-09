@@ -1433,6 +1433,14 @@ skia_component("skia") {
   if (skia_include_multiframe_procs) {
     sources += [ "tools/SkSharingProc.cpp" ]
   }
+
+  if (sk4d_workarounds) {
+    sources += [
+      "sk4d/miscellaneous/sk4d_dtoa.h",
+      "sk4d/miscellaneous/sk4d_dtoa.cpp",
+    ]
+    defines += [ "SK4D_WORKAROUNDS" ]
+  }
 }
 
 # DebugCanvas used in experimental/wasm-skp-debugger
@@ -3390,4 +3398,158 @@ skia_executable("skia_c_api_example") {
   sources = [ "experimental/c-api-example/skia-c-example.c" ]
   include_dirs = [ "." ]
   deps = [ ":skia" ]
+}
+
+config("sk4d_public") {
+  include_dirs = [ "sk4d" ]
+  defines = []
+  if (sk4d_component_build) {
+    defines += [ "SK4D_DLL" ]
+  }
+}
+
+sk4d_component("sk4d") {
+  defines = [ "SK4D_IMPLEMENTATION=1" ]
+  deps = [
+    ":skia",
+    ":modules",
+  ]
+  public_configs = [ ":sk4d_public" ]
+  public = [
+    "sk4d/include/c/gr4d_backendsurface.h",
+    "sk4d/include/c/gr4d_directcontext.h",
+    "sk4d/include/c/gr4d_gl_interface.h",
+    "sk4d/include/c/sk4d_blender.h",
+    "sk4d/include/c/sk4d_canvas.h",
+    "sk4d/include/c/sk4d_codec.h",
+    "sk4d/include/c/sk4d_colorfilter.h",
+    "sk4d/include/c/sk4d_colorspace.h",
+    "sk4d/include/c/sk4d_data.h",
+    "sk4d/include/c/sk4d_document.h",
+    "sk4d/include/c/sk4d_font.h",
+    "sk4d/include/c/sk4d_graphics.h",
+    "sk4d/include/c/sk4d_image.h",
+    "sk4d/include/c/sk4d_imageencoder.h",
+    "sk4d/include/c/sk4d_imagefilter.h",
+    "sk4d/include/c/sk4d_maskfilter.h",
+    "sk4d/include/c/sk4d_paint.h",
+    "sk4d/include/c/sk4d_path.h",
+    "sk4d/include/c/sk4d_pathbuilder.h",
+    "sk4d/include/c/sk4d_patheffect.h",
+    "sk4d/include/c/sk4d_pathmeasure.h",
+    "sk4d/include/c/sk4d_picture.h",
+    "sk4d/include/c/sk4d_picturerecorder.h",
+    "sk4d/include/c/sk4d_pixmap.h",
+    "sk4d/include/c/sk4d_refcnt.h",
+    "sk4d/include/c/sk4d_region.h",
+    "sk4d/include/c/sk4d_rrect.h",
+    "sk4d/include/c/sk4d_runtimeeffect.h",
+    "sk4d/include/c/sk4d_shader.h",
+    "sk4d/include/c/sk4d_stream.h",
+    "sk4d/include/c/sk4d_string.h",
+    "sk4d/include/c/sk4d_surface.h",
+    "sk4d/include/c/sk4d_textblob.h",
+    "sk4d/include/c/sk4d_tracememorydump.h",
+    "sk4d/include/c/sk4d_typeface.h",
+    "sk4d/include/c/sk4d_types.h",
+    "sk4d/include/c/sk4d_version.h",
+    "sk4d/include/c/sk4d_vertices.h",
+    "sk4d/include/core/Sk4DStream.h",
+    "sk4d/include/core/Sk4DTraceMemoryDump.h",
+    "sk4d/modules/particles/include/sk4d_particleeffect.h",
+    "sk4d/modules/particles/include/sk4d_particles_types.h",
+    "sk4d/modules/skottie/include/sk4d_skottie.h",
+    "sk4d/modules/skottie/include/sk4d_skottie_types.h",
+    "sk4d/modules/skparagraph/include/sk4d_paragraph.h",
+    "sk4d/modules/skparagraph/include/sk4d_paragraph_types.h",
+    "sk4d/modules/skparagraph/include/sk4d_paragraphbuilder.h",
+    "sk4d/modules/skparagraph/include/sk4d_paragraphstyle.h",
+    "sk4d/modules/skparagraph/include/sk4d_textstyle.h",
+    "sk4d/modules/skparagraph/include/sk4d_typefacefontprovider.h",
+    "sk4d/modules/skresources/include/sk4d_resources.h",
+    "sk4d/modules/skresources/include/sk4d_resources_types.h",
+    "sk4d/modules/skresources/include/Sk4DResources.h",
+    "sk4d/modules/skshaper/include/sk4d_shaper.h",
+    "sk4d/modules/skshaper/include/sk4d_shaper_types.h",
+    "sk4d/modules/skunicode/include/sk4d_unicode.h",
+    "sk4d/modules/skunicode/include/sk4d_unicode_types.h",
+    "sk4d/modules/svg/include/sk4d_svg_types.h",
+    "sk4d/modules/svg/include/sk4d_svgdom.h",
+    "sk4d/modules/svg/include/sk4d_svgnode.h",
+    "sk4d/modules/svg/include/sk4d_svgsvg.h",
+  ]
+  sources = [
+    "sk4d/src/c/gr4d_backendsurface.cpp",
+    "sk4d/src/c/gr4d_directcontext.cpp",
+    "sk4d/src/c/gr4d_gl_interface.cpp",
+    "sk4d/src/c/sk4d_blender.cpp",
+    "sk4d/src/c/sk4d_canvas.cpp",
+    "sk4d/src/c/sk4d_codec.cpp",
+    "sk4d/src/c/sk4d_colorfilter.cpp",
+    "sk4d/src/c/sk4d_colorspace.cpp",
+    "sk4d/src/c/sk4d_data.cpp",
+    "sk4d/src/c/sk4d_document.cpp",
+    "sk4d/src/c/sk4d_font.cpp",
+    "sk4d/src/c/sk4d_graphics.cpp",
+    "sk4d/src/c/sk4d_image.cpp",
+    "sk4d/src/c/sk4d_imageencoder.cpp",
+    "sk4d/src/c/sk4d_imagefilter.cpp",
+    "sk4d/src/c/sk4d_mapping.h",
+    "sk4d/src/c/sk4d_maskfilter.cpp",
+    "sk4d/src/c/sk4d_paint.cpp",
+    "sk4d/src/c/sk4d_path.cpp",
+    "sk4d/src/c/sk4d_pathbuilder.cpp",
+    "sk4d/src/c/sk4d_patheffect.cpp",
+    "sk4d/src/c/sk4d_pathmeasure.cpp",
+    "sk4d/src/c/sk4d_picture.cpp",
+    "sk4d/src/c/sk4d_picturerecorder.cpp",
+    "sk4d/src/c/sk4d_pixmap.cpp",
+    "sk4d/src/c/sk4d_refcnt.cpp",
+    "sk4d/src/c/sk4d_region.cpp",
+    "sk4d/src/c/sk4d_rrect.cpp",
+    "sk4d/src/c/sk4d_runtimeeffect.cpp",
+    "sk4d/src/c/sk4d_shader.cpp",
+    "sk4d/src/c/sk4d_stream.cpp",
+    "sk4d/src/c/sk4d_string.cpp",
+    "sk4d/src/c/sk4d_surface.cpp",
+    "sk4d/src/c/sk4d_textblob.cpp",
+    "sk4d/src/c/sk4d_tracememorydump.cpp",
+    "sk4d/src/c/sk4d_typeface.cpp",
+    "sk4d/src/c/sk4d_version.cpp",
+    "sk4d/src/c/sk4d_vertices.cpp",
+    "sk4d/src/core/Sk4DStream.cpp",
+    "sk4d/src/core/Sk4DTraceMemoryDump.cpp",
+    "sk4d/modules/particles/src/sk4d_particleeffect.cpp",
+    "sk4d/modules/particles/src/sk4d_particles_mapping.h",
+    "sk4d/modules/skottie/src/sk4d_skottie.cpp",
+    "sk4d/modules/skottie/src/sk4d_skottie_mapping.h",
+    "sk4d/modules/skparagraph/src/sk4d_paragraph.cpp",
+    "sk4d/modules/skparagraph/src/sk4d_paragraph_mapping.h",
+    "sk4d/modules/skparagraph/src/sk4d_paragraphbuilder.cpp",
+    "sk4d/modules/skparagraph/src/sk4d_paragraphstyle.cpp",
+    "sk4d/modules/skparagraph/src/sk4d_textstyle.cpp",
+    "sk4d/modules/skparagraph/src/sk4d_typefacefontprovider.cpp",
+    "sk4d/modules/skresources/src/sk4d_resources.cpp",
+    "sk4d/modules/skresources/src/sk4d_resources_mapping.h",
+    "sk4d/modules/skresources/src/Sk4DResources.cpp",
+    "sk4d/modules/skshaper/src/sk4d_shaper.cpp",
+    "sk4d/modules/skshaper/src/sk4d_shaper_mapping.h",
+    "sk4d/modules/skunicode/src/sk4d_unicode.cpp",
+    "sk4d/modules/skunicode/src/sk4d_unicode_mapping.h",
+    "sk4d/modules/svg/src/sk4d_svg_mapping.h",
+    "sk4d/modules/svg/src/sk4d_svgdom.cpp",
+    "sk4d/modules/svg/src/sk4d_svgnode.cpp",
+    "sk4d/modules/svg/src/sk4d_svgsvg.cpp",
+  ]
+  if (sk4d_enable_assertions) {
+    sources += [
+      "sk4d/src/c/sk4d_assertions.cpp",
+      "sk4d/modules/particles/src/sk4d_particles_assertions.cpp",
+      "sk4d/modules/skottie/src/sk4d_skottie_assertions.cpp",
+      "sk4d/modules/skparagraph/src/sk4d_paragraph_assertions.cpp",
+      "sk4d/modules/skresources/src/sk4d_resources_assertions.cpp",
+      "sk4d/modules/skunicode/src/sk4d_unicode_assertions.cpp",
+      "sk4d/modules/svg/src/sk4d_svg_assertions.cpp",
+    ]
+  }
 }
