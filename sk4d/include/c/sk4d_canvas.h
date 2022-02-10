@@ -15,6 +15,7 @@ SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
 SK4D_API void sk4d_canvas_clear(sk_canvas_t* self, sk_color_t color);
 SK4D_API void sk4d_canvas_clear2(sk_canvas_t* self, const sk_color4f_t* color);
+SK4D_API void sk4d_canvas_destroy(sk_canvas_t* self);
 SK4D_API void sk4d_canvas_discard(sk_canvas_t* self);
 SK4D_API void sk4d_canvas_clip_path(sk_canvas_t* self, const sk_path_t* path, sk_clipop_t op, bool anti_alias);
 SK4D_API void sk4d_canvas_clip_rect(sk_canvas_t* self, const sk_rect_t* rect, sk_clipop_t op, bool anti_alias);

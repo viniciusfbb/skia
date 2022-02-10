@@ -17,6 +17,10 @@ void sk4d_canvas_clear2(sk_canvas_t* self, const sk_color4f_t* color) {
     AsCanvas(self)->clear(AsColor4f(*color));
 }
 
+void sk4d_canvas_destroy(sk_canvas_t* self) {
+    delete AsCanvas(self);
+}
+
 void sk4d_canvas_discard(sk_canvas_t* self) {
     AsCanvas(self)->discard();
 }
