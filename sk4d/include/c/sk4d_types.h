@@ -115,6 +115,10 @@ typedef struct sk_wstreamadapter_t           sk_wstreamadapter_t;
 #define USE_DEVICE_INDEPENDENT_FONTS_SK_SURFACE_PROPS_FLAG (1 << 0)
 #define DYNAMIC_MSAA_SK_SURFACE_PROPS_FLAG                 (1 << 1)
 
+#define CONVERT_TEXT_TO_PATHS_SK_SVG_CANVAS_FLAG           (1 << 0)
+#define NO_PRETTY_XML_SK_SVG_CANVAS_FLAG                   (1 << 1)
+#define RELATIVE_PATH_ENCODING_SK_SVG_CANVAS_FLAG          (1 << 2)
+
 typedef enum {
     OPEN_GL_GR_BACKENDAPI,
     METAL_GR_BACKENDAPI = 2,

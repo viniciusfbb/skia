@@ -92,10 +92,10 @@
 #include "include/gpu/GrBackendSurface.h"
 #include "include/gpu/GrTypes.h"
 #include "include/pathops/SkPathOps.h"
+#include "include/svg/SkSVGCanvas.h"
 #include "include/third_party/skcms/skcms.h"
 #include "include/utils/SkAnimCodecPlayer.h"
 #include "include/utils/SkParsePath.h"
-
 
 // Auxiliary macro for mapping
 

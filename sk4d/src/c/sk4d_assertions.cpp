@@ -72,7 +72,6 @@
 	#endif
 #endif
 
-
 /*
  * ASSERTIONS OF DEFINITIONS
  */
@@ -93,6 +92,10 @@ static_assert(static_cast<int>(SkPathSegmentMask::kCubic_SkPathSegmentMask) == C
 
 static_assert(static_cast<int>(SkSurfaceProps::kUseDeviceIndependentFonts_Flag) == USE_DEVICE_INDEPENDENT_FONTS_SK_SURFACE_PROPS_FLAG, "");
 static_assert(static_cast<int>(SkSurfaceProps::kDynamicMSAA_Flag)               == DYNAMIC_MSAA_SK_SURFACE_PROPS_FLAG, "");
+
+static_assert(static_cast<int>(SkSVGCanvas::kConvertTextToPaths_Flag)   == CONVERT_TEXT_TO_PATHS_SK_SVG_CANVAS_FLAG,  "");
+static_assert(static_cast<int>(SkSVGCanvas::kNoPrettyXML_Flag)          == NO_PRETTY_XML_SK_SVG_CANVAS_FLAG,          "");
+static_assert(static_cast<int>(SkSVGCanvas::kRelativePathEncoding_Flag) == RELATIVE_PATH_ENCODING_SK_SVG_CANVAS_FLAG, "");
 
 
 /*
