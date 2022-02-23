@@ -9,18 +9,14 @@
 #include "include/c/sk4d_version.h"
 #include "src/c/sk4d_mapping.h"
 
-int32_t sk4d_version_get_build(void) {
+int32_t sk4d_library_version_get_build(void) {
     return SK4D_VERSION_BUILD;
 }
 
-int32_t sk4d_version_get_major(void) {
+int32_t sk4d_library_version_get_major(void) {
     return SK4D_VERSION_MAJOR;
 }
 
-int32_t sk4d_version_get_milestone(void) {
-    return SK_MILESTONE;
-}
-
-int32_t sk4d_version_get_minor(void) {
+int32_t sk4d_library_version_get_minor(void) {
     return SK4D_VERSION_MINOR;
 }
