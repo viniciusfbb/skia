@@ -11,16 +11,15 @@
 
 #include "include/c/sk4d_types.h"
 
-#define SK4D_VERSION_MAJOR 3
+#define SK4D_VERSION_MAJOR SK_MILESTONE
 #define SK4D_VERSION_MINOR 0
-#define SK4D_VERSION_BUILD 4
+#define SK4D_VERSION_BUILD 0
 
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
-SK4D_API int32_t sk4d_version_get_build(void);
-SK4D_API int32_t sk4d_version_get_major(void);
-SK4D_API int32_t sk4d_version_get_milestone(void);
-SK4D_API int32_t sk4d_version_get_minor(void);
+SK4D_API int32_t sk4d_library_version_get_build(void);
+SK4D_API int32_t sk4d_library_version_get_major(void);
+SK4D_API int32_t sk4d_library_version_get_minor(void);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

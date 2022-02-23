@@ -243,7 +243,6 @@ config("default") {
   }
 
   if (is_linux) {
-    ldflags += [ "-static-libstdc++", "-static-libgcc" ]
     libs += [ "pthread" ]
   }
 
