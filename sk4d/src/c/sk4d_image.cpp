@@ -7,19 +7,20 @@
  */
 
 #include <memory>
+#include <utility>
 
 #include "include/c/sk4d_image.h"
 #include "src/c/sk4d_mapping.h"
 
-void sk4d_image_encode_to_file(const sk_image_t* self, const char file_name[], sk_encodedimageformat_t format, int32_t quality) {
+bool sk4d_image_encode_to_file(const sk_image_t* self, const char file_name[], sk_encodedimageformat_t format, int32_t quality) {
     SkFILEWStream file(file_name);
-    sk_sp<SkData> data(AsImage(self)->encodeToData(AsEncodedImageFormat(format), quality));
-    file.write(data->data(), data->size());
+    auto data = AsImage(self)->encodeToData(AsEncodedImageFormat(format), quality);
+    return (data) ? file.write(data->data(), data->size()) : false;
 }
 
-void sk4d_image_encode_to_stream(const sk_image_t* self, sk_wstream_t* w_stream, sk_encodedimageformat_t format, int32_t quality) {
-    sk_sp<SkData> data(AsImage(self)->encodeToData(AsEncodedImageFormat(format), quality));
-    AsWStream(w_stream)->write(data->data(), data->size());
+bool sk4d_image_encode_to_stream(const sk_image_t* self, sk_wstream_t* w_stream, sk_encodedimageformat_t format, int32_t quality) {
+    auto data = AsImage(self)->encodeToData(AsEncodedImageFormat(format), quality);
+    return (data) ? AsWStream(w_stream)->write(data->data(), data->size()) : false;
 }
 
 sk_alphatype_t sk4d_image_get_alpha_type(const sk_image_t* self) {
@@ -62,6 +63,11 @@ bool sk4d_image_is_valid(const sk_image_t* self, gr_directcontext_t* context) {
     return AsImage(self)->isValid(SK4D_ONLY_GPU(AsGrDirectContext(context), nullptr));
 }
 
+gr_backendtexture_t* sk4d_image_make_backend_texture(sk_image_t* self, gr_directcontext_t* context) {
+    SK4D_ONLY_GPU(auto r = std::make_unique<GrBackendTexture>();)
+    return SK4D_ONLY_GPU((SkImage::MakeBackendTextureFromSkImage(AsGrDirectContext(context), std::move(sk_sp<SkImage>(AsImage(self))), r.get(), nullptr)) ? ToGrBackendTexture(r.release()) : nullptr, nullptr);
+}
+
 sk_image_t* sk4d_image_make_from_adopted_texture(gr_directcontext_t* context, const gr_backendtexture_t* texture, gr_surfaceorigin_t origin, sk_colortype_t color_type, sk_alphatype_t alpha_type, sk_colorspace_t* color_space) {
     return SK4D_ONLY_GPU(ToImage(SkImage::MakeFromAdoptedTexture(AsGrDirectContext(context), AsGrBackendTexture(*texture), AsGrSurfaceOrigin(origin), AsColorType(color_type), AsAlphaType(alpha_type), sk_ref_sp(AsColorSpace(color_space))).release()), nullptr);
 }
@@ -100,6 +106,13 @@ sk_image_t* sk4d_image_make_raster_copy(const sk_pixmap_t* pixmap) {
 
 sk_image_t* sk4d_image_make_raster_image(const sk_image_t* self) {
     return ToImage(AsImage(self)->makeRasterImage().release());
+}
+
+sk_shader_t* sk4d_image_make_raw_shader(const sk_image_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, const sk_samplingoptions_t* sampling, const sk_matrix_t* local_matrix) {
+    SkMatrix m;
+    if (local_matrix)
+      m = AsMatrix(local_matrix);
+    return ToShader(AsImage(self)->makeRawShader(AsTileMode(tile_mode_x), AsTileMode(tile_mode_y), AsSamplingOptions(*sampling), (local_matrix) ? &m : nullptr).release());
 }
 
 sk_shader_t* sk4d_image_make_shader(const sk_image_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, const sk_samplingoptions_t* sampling, const sk_matrix_t* local_matrix) {

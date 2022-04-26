@@ -143,7 +143,6 @@ void sk4d_pathiterator_destroy(sk_pathiterator_t* self) {
 }
 
 bool sk4d_pathiterator_next(sk_pathiterator_t* self, sk_pathiteratorelem_t* elem) {
-    SkPoint points[4];
     auto verb = AsPathIterator(self)->next(AsPoint(&elem->points[0]));
     if (verb == SkPath::kDone_Verb)
         return false;
