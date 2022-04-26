@@ -120,6 +120,17 @@ sk_runtimeeffect_t* sk4d_runtimeeffect_make_for_shader(const char sksl[], sk_str
     return ToRuntimeEffect(effect.release());
 }
 
+sk_image_t* sk4d_runtimeeffect_make_image(const sk_runtimeeffect_t* self, gr_directcontext_t* context, const void* uniforms, sk_shader_t* children[], const sk_matrix_t* local_matrix, const sk_imageinfo_t* image_info, bool is_mipmapped) {
+    auto count = AsRuntimeEffect(self)->children().size();
+    SkSTArray<4, SkRuntimeEffect::ChildPtr> c(count);
+    for (size_t i = 0; i < count; i++)
+        c.emplace_back(sk_ref_sp(AsShader(children[i])));
+    SkMatrix m;
+    if (local_matrix)
+      m = AsMatrix(local_matrix);
+    return ToImage(AsRuntimeEffect(self)->makeImage(SK4D_ONLY_GPU(AsGrDirectContext(context), nullptr), SkData::MakeWithoutCopy(uniforms, AsRuntimeEffect(self)->uniformSize()), SkMakeSpan(c), (local_matrix) ? &m : nullptr, AsImageInfo(image_info), is_mipmapped).release());
+}
+
 sk_shader_t* sk4d_runtimeeffect_make_shader(const sk_runtimeeffect_t* self, const void* uniforms, sk_shader_t* children[], const sk_matrix_t* local_matrix, bool opaque) {
     auto count = AsRuntimeEffect(self)->children().size();
     std::vector<sk_sp<SkShader>> c(count);

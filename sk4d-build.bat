@@ -11,7 +11,6 @@ rem #
 setlocal
 
 python --version >nul 2>&1 && goto :RUN
-
 echo Python not found.
 echo.
 echo Python can be installed in two ways:
@@ -22,10 +21,11 @@ echo * Make sure it has been added to the PATH environment variable and reopen t
 goto :EOF
 
 :RUN
+
 set SCRIPT_DIR=%~dp0
 pushd "%SCRIPT_DIR%"
 set PATH=%SCRIPT_DIR%sk4d\bin;%PATH%
-python "%SCRIPT_DIR%sk4d\scripts\build.py" %*
+cmd /c python3 "%SCRIPT_DIR%sk4d\scripts\build.py" %*
 popd
 
 endlocal

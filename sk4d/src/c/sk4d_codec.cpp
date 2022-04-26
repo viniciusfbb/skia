@@ -19,6 +19,10 @@ void sk4d_codec_get_dimensions(const sk_codec_t* self, sk_isize_t* result) {
     *result = ToISize(AsCodec(self)->dimensions());
 }
 
+sk_encodedimageformat_t sk4d_codec_get_encoded_image_format(const sk_codec_t* self) {
+    return ToEncodedImageFormat(AsCodec(self)->getEncodedFormat());
+}
+
 sk_image_t* sk4d_codec_get_image(sk_codec_t* self, sk_colortype_t color_type, sk_alphatype_t alpha_type, sk_colorspace_t* color_space) {
     auto [image, result] = AsCodec(self)->getImage(SkImageInfo::Make(AsCodec(self)->dimensions(), AsColorType(color_type), AsAlphaType(alpha_type), sk_ref_sp(AsColorSpace(color_space))));
     return (result == SkCodec::kSuccess) ? ToImage(image.release()) : nullptr;
@@ -30,6 +34,11 @@ bool sk4d_codec_get_pixels(sk_codec_t* self, void* pixels, size_t row_bytes, sk_
 
 sk_codec_t* sk4d_codec_make_from_file(const char file_name[]) {
     auto s = std::make_unique<SkFILEStream>(file_name);
+    return ToCodec(SkCodec::MakeFromStream(std::move(s)).release());
+}
+
+sk_codec_t* sk4d_codec_make_from_stream(sk_stream_t* stream) {
+    std::unique_ptr<SkStream> s(AsStream(stream));
     return ToCodec(SkCodec::MakeFromStream(std::move(s)).release());
 }
 

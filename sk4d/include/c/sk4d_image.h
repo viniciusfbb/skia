@@ -13,8 +13,8 @@
 
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
-SK4D_API void sk4d_image_encode_to_file(const sk_image_t* self, const char file_name[], sk_encodedimageformat_t format, int32_t quality);
-SK4D_API void sk4d_image_encode_to_stream(const sk_image_t* self, sk_wstream_t* w_stream, sk_encodedimageformat_t format, int32_t quality);
+SK4D_API bool sk4d_image_encode_to_file(const sk_image_t* self, const char file_name[], sk_encodedimageformat_t format, int32_t quality);
+SK4D_API bool sk4d_image_encode_to_stream(const sk_image_t* self, sk_wstream_t* w_stream, sk_encodedimageformat_t format, int32_t quality);
 SK4D_API sk_alphatype_t sk4d_image_get_alpha_type(const sk_image_t* self);
 SK4D_API sk_colorspace_t* sk4d_image_get_color_space(const sk_image_t* self);
 SK4D_API sk_colortype_t sk4d_image_get_color_type(const sk_image_t* self);
@@ -25,6 +25,7 @@ SK4D_API int32_t sk4d_image_get_width(const sk_image_t* self);
 SK4D_API bool sk4d_image_is_lazy_generated(const sk_image_t* self);
 SK4D_API bool sk4d_image_is_texture_backed(const sk_image_t* self);
 SK4D_API bool sk4d_image_is_valid(const sk_image_t* self, gr_directcontext_t* context);
+SK4D_API gr_backendtexture_t* sk4d_image_make_backend_texture(sk_image_t* self, gr_directcontext_t* context);
 SK4D_API sk_image_t* sk4d_image_make_from_adopted_texture(gr_directcontext_t* context, const gr_backendtexture_t* texture, gr_surfaceorigin_t origin, sk_colortype_t color_type, sk_alphatype_t alpha_type, sk_colorspace_t* color_space);
 SK4D_API sk_image_t* sk4d_image_make_from_encoded_file(const char file_name[]);
 SK4D_API sk_image_t* sk4d_image_make_from_encoded_stream(sk_stream_t* stream);
@@ -33,6 +34,7 @@ SK4D_API sk_image_t* sk4d_image_make_from_texture(gr_directcontext_t* context, c
 SK4D_API sk_image_t* sk4d_image_make_non_texture_image(const sk_image_t* self);
 SK4D_API sk_image_t* sk4d_image_make_raster_copy(const sk_pixmap_t* pixmap);
 SK4D_API sk_image_t* sk4d_image_make_raster_image(const sk_image_t* self);
+SK4D_API sk_shader_t* sk4d_image_make_raw_shader(const sk_image_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, const sk_samplingoptions_t* sampling, const sk_matrix_t* local_matrix);
 SK4D_API sk_shader_t* sk4d_image_make_shader(const sk_image_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, const sk_samplingoptions_t* sampling, const sk_matrix_t* local_matrix);
 SK4D_API sk_image_t* sk4d_image_make_subset(const sk_image_t* self, const sk_irect_t* subset, gr_directcontext_t* context);
 SK4D_API sk_image_t* sk4d_image_make_texture_image(const sk_image_t* self, gr_directcontext_t* context, bool is_mipmapped);
