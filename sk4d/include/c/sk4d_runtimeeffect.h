@@ -29,8 +29,8 @@ SK4D_API sk_colorfilter_t* sk4d_runtimeeffect_make_color_filter(const sk_runtime
 SK4D_API sk_runtimeeffect_t* sk4d_runtimeeffect_make_for_blender(const char sksl[], sk_string_t* error_text);
 SK4D_API sk_runtimeeffect_t* sk4d_runtimeeffect_make_for_color_filter(const char sksl[], sk_string_t* error_text);
 SK4D_API sk_runtimeeffect_t* sk4d_runtimeeffect_make_for_shader(const char sksl[], sk_string_t* error_text);
-SK4D_API sk_image_t* sk4d_runtimeeffect_make_image(const sk_runtimeeffect_t* self, gr_directcontext_t* context, const void* uniforms, sk_shader_t* children[], const sk_matrix_t* local_matrix, const sk_imageinfo_t* image_info, bool is_mipmapped);
-SK4D_API sk_shader_t* sk4d_runtimeeffect_make_shader(const sk_runtimeeffect_t* self, const void* uniforms, sk_shader_t* children[], const sk_matrix_t* local_matrix, bool opaque);
+SK4D_API sk_image_t* sk4d_runtimeeffect_make_image(const sk_runtimeeffect_t* self, gr_directcontext_t* context, const void* uniforms, sk_shader_t* children[], const sk_matrix_t* local_matrix, const sk_imageinfo_t* image_info, bool mipmapped);
+SK4D_API sk_shader_t* sk4d_runtimeeffect_make_shader(const sk_runtimeeffect_t* self, const void* uniforms, sk_shader_t* children[], const sk_matrix_t* local_matrix);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

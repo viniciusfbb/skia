@@ -13,7 +13,7 @@ template("third_party_config") {
     if (enabled) {
       forward_variables_from(invoker, "*", [ "include_dirs" ])
       cflags = []
-      if (is_win) {
+      if (is_win && !win_clang) {
         include_dirs = invoker.include_dirs
         if (is_clang) {
           foreach(dir, invoker.include_dirs) {
@@ -92,7 +92,7 @@ template("third_party") {
       if (!defined(cflags)) {
         cflags = []
       }
-      if (is_win) {
+      if (is_win && !win_clang) {
         cflags += [ "/w" ]
       } else {
         cflags += [ "-w" ]

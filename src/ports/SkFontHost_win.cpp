@@ -1073,7 +1073,11 @@ void SkScalerContext_GDI::RGBToA8(const SkGdiRGB* SK_RESTRICT src, size_t srcRB,
         for (int i = 0; i < width; i++) {
             dst[i] = rgb_to_a8<APPLY_PREBLEND>(src[i], table8);
             if constexpr (kSkShowTextBlitCoverage) {
+#if defined(__MINGW32__)
+                dst[i] = std::max((unsigned int)dst[i], 10u);
+#else
                 dst[i] = std::max(dst[i], 10u);
+#endif
             }
         }
         src = SkTAddOffset<const SkGdiRGB>(src, srcRB);

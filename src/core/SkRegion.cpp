@@ -661,7 +661,7 @@ bool SkRegion::setRects(const SkIRect rects[], int count) {
 
 ///////////////////////////////////////////////////////////////////////////////
 
-#if defined _WIN32  // disable warning : local variable used without having been initialized
+#if defined(_WIN32) && !defined(__MINGW32__)  // disable warning : local variable used without having been initialized
 #pragma warning ( push )
 #pragma warning ( disable : 4701 )
 #endif
@@ -810,7 +810,7 @@ static int operate_on_span(const SkRegionPriv::RunType a_runs[],
     return dst - &(*array)[0];
 }
 
-#if defined _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #pragma warning ( pop )
 #endif
 

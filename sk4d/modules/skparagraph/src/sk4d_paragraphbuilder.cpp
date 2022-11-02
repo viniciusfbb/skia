@@ -6,6 +6,8 @@
  * found in the LICENSE file.
  */
 
+ #include <string.h>
+
 #include "modules/skparagraph/include/sk4d_paragraphbuilder.h"
 #include "modules/skparagraph/src/sk4d_paragraph_mapping.h"
 
@@ -13,8 +15,8 @@ void sk4d_paragraphbuilder_add_placeholder(sk_paragraphbuilder_t* self, const sk
     AsParagraphBuilder(self)->addPlaceholder(AsPlaceholderStyle(*placeholder));
 }
 
-void sk4d_paragraphbuilder_add_text(sk_paragraphbuilder_t* self, const char* text, size_t size) {
-    AsParagraphBuilder(self)->addText(text, size);
+void sk4d_paragraphbuilder_add_text(sk_paragraphbuilder_t* self, const char text[]) {
+    AsParagraphBuilder(self)->addText(text, strlen(text));
 }
 
 sk_paragraph_t* sk4d_paragraphbuilder_build(sk_paragraphbuilder_t* self) {

@@ -76,9 +76,9 @@ void sk4d_path_get_tight_bounds(const sk_path_t* self, sk_rect_t* result) {
     *result = ToRect(AsPath(self)->computeTightBounds());
 }
 
-sk_path_t* sk4d_path_interpolate(const sk_path_t* self, const sk_path_t* cending, float weight) {
+sk_path_t* sk4d_path_interpolate(const sk_path_t* self, const sk_path_t* ending, float weight) {
     auto r = std::make_unique<SkPath>();
-    return AsPath(self)->interpolate(AsPath(*cending), weight, r.get()) ? ToPath(r.release()) : nullptr;
+    return AsPath(self)->interpolate(AsPath(*ending), weight, r.get()) ? ToPath(r.release()) : nullptr;
 }
 
 bool sk4d_path_is_convex(const sk_path_t* self) {
@@ -115,6 +115,11 @@ bool sk4d_path_is_rect(const sk_path_t* self, sk_rect_t* rect) {
 
 bool sk4d_path_is_rrect(const sk_path_t* self, sk_rrect_t* rrect) {
     return AsPath(self)->isRRect(AsRRect(rrect));
+}
+
+sk_path_t* sk4d_path_op(const sk_path_t* self, const sk_path_t* path, sk_pathop_t op) {
+    auto r = std::make_unique<SkPath>();
+    return Op(AsPath(*self), AsPath(*path), AsPathOp(op), r.get()) ? ToPath(r.release()) : nullptr;
 }
 
 void sk4d_path_serialize_to_stream(const sk_path_t* self, sk_wstream_t* w_stream) {

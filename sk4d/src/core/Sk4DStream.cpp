@@ -6,6 +6,8 @@
  * found in the LICENSE file.
  */
 
+#include <algorithm>
+
 #include "include/core/SkData.h"
 #include "include/core/Sk4DStream.h"
 
@@ -23,7 +25,7 @@ size_t SkStreamAdapter::getPosition() const {
 }
 
 bool SkStreamAdapter::isAtEnd() const {
-    return this->getPosition() == this->getLength();
+    return this->getPosition() >= this->getLength();
 }
 
 bool SkStreamAdapter::move(long offset) {
@@ -39,6 +41,12 @@ size_t SkStreamAdapter::peek(void* buffer, size_t size) const {
 }
 
 size_t SkStreamAdapter::read(void* buffer, size_t size) {
+    if (!buffer) {
+        auto count = std::min(size, this->getLength() - this->getPosition());
+        if (!this->move(count))
+            return 0;
+        return count;
+    }
     return fProcs.fRead(fContext, buffer, size);
 }
 

@@ -52,11 +52,14 @@ SK4D_API void sk4d_canvas_draw_rrect_difference(sk_canvas_t* self, const sk_rrec
 SK4D_API void sk4d_canvas_draw_simple_text(sk_canvas_t* self, const void* text, size_t size, sk_textencoding_t encoding, float x, float y, const sk_font_t* font, const sk_paint_t* paint);
 SK4D_API void sk4d_canvas_draw_text_blob(sk_canvas_t* self, const sk_textblob_t* text_blob, float x, float y, const sk_paint_t* paint);
 SK4D_API void sk4d_canvas_draw_vertices(sk_canvas_t* self, const sk_vertices_t* vertices, sk_blendmode_t blend_mode, const sk_paint_t* paint);
+SK4D_API void sk4d_canvas_get_base_props(const sk_canvas_t* self, /*out*/ sk_surfaceprops_t* result);
 SK4D_API void sk4d_canvas_get_device_clip_bounds(const sk_canvas_t* self, /*out*/ sk_irect_t* result);
 SK4D_API void sk4d_canvas_get_local_clip_bounds(const sk_canvas_t* self, /*out*/ sk_rect_t* result);
 SK4D_API void sk4d_canvas_get_local_to_device(const sk_canvas_t* self, /*out*/ sk_matrix44_t* result);
 SK4D_API void sk4d_canvas_get_local_to_device_as_3x3(const sk_canvas_t* self, /*out*/ sk_matrix_t* result);
+SK4D_API void sk4d_canvas_get_top_props(const sk_canvas_t* self, /*out*/ sk_surfaceprops_t* result);
 SK4D_API int32_t sk4d_canvas_get_save_count(const sk_canvas_t* self);
+SK4D_API sk_surface_t* sk4d_canvas_make_surface(sk_canvas_t* self, const sk_imageinfo_t* image_info, const sk_surfaceprops_t* surface_props);
 SK4D_API bool sk4d_canvas_quick_reject(const sk_canvas_t* self, const sk_rect_t* rect);
 SK4D_API bool sk4d_canvas_quick_reject2(const sk_canvas_t* self, const sk_path_t* path);
 SK4D_API void sk4d_canvas_reset_matrix(sk_canvas_t* self);

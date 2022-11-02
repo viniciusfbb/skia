@@ -13,6 +13,7 @@
 #include "include/codec/SkCodec.h"
 #include "include/core/Sk4DStream.h"
 #include "include/core/Sk4DTraceMemoryDump.h"
+#include "include/core/SkAlphaType.h"
 #include "include/core/SkBlender.h"
 #include "include/core/SkBlendMode.h"
 #include "include/core/SkBlurTypes.h"
@@ -21,12 +22,12 @@
 #include "include/core/SkColor.h"
 #include "include/core/SkColorFilter.h"
 #include "include/core/SkColorSpace.h"
+#include "include/core/SkColorType.h"
 #include "include/core/SkData.h"
 #include "include/core/SkDocument.h"
 #include "include/core/SkEncodedImageFormat.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
-#include "include/core/SkFontMgr.h"
 #include "include/core/SkFontStyle.h"
 #include "include/core/SkFontTypes.h"
 #include "include/core/SkGraphics.h"
@@ -37,7 +38,6 @@
 #include "include/core/SkM44.h"
 #include "include/core/SkMaskFilter.h"
 #include "include/core/SkMatrix.h"
-#include "include/core/SkMilestone.h"
 #include "include/core/SkPaint.h"
 #include "include/core/SkPath.h"
 #include "include/core/SkPathBuilder.h"
@@ -89,13 +89,11 @@
 #include "include/effects/SkTableColorFilter.h"
 #include "include/effects/SkTableMaskFilter.h"
 #include "include/effects/SkTrimPathEffect.h"
-#include "include/gpu/GrBackendSurface.h"
-#include "include/gpu/GrTypes.h"
 #include "include/pathops/SkPathOps.h"
 #include "include/svg/SkSVGCanvas.h"
-#include "include/third_party/skcms/skcms.h"
 #include "include/utils/SkAnimCodecPlayer.h"
 #include "include/utils/SkParsePath.h"
+#include "modules/skcms/skcms.h"
 
 // Auxiliary macro for mapping
 
@@ -140,9 +138,6 @@
     SK4D_DEF_MAP(type, type_t, name, static_cast)
 
 
-SK4D_DEF_CLASS_MAP(GrBackendFormat, gr_backendformat_t, GrBackendFormat)
-SK4D_DEF_CLASS_MAP(GrBackendRenderTarget, gr_backendrendertarget_t, GrBackendRenderTarget)
-SK4D_DEF_CLASS_MAP(GrBackendTexture, gr_backendtexture_t, GrBackendTexture)
 SK4D_DEF_CLASS_MAP(SkAnimCodecPlayer, sk_animcodecplayer_t, AnimCodecPlayer)
 SK4D_DEF_CLASS_MAP(SkBlender, sk_blender_t, Blender)
 SK4D_DEF_CLASS_MAP(SkCanvas, sk_canvas_t, Canvas)
@@ -159,12 +154,8 @@ SK4D_DEF_CLASS_MAP(SkColorSpacePrimaries, sk_colorspaceprimaries_t, ColorSpacePr
 SK4D_DEF_CLASS_MAP(SkCubicResampler, sk_cubicresampler_t, CubicResampler)
 SK4D_DEF_CLASS_MAP(SkData, sk_data_t, Data)
 SK4D_DEF_CLASS_MAP(SkDocument, sk_document_t, Document)
-SK4D_DEF_CLASS_MAP(SkDynamicMemoryWStream, sk_dynamicmemorywstream_t, DynamicMemoryWStream)
-SK4D_DEF_CLASS_MAP(SkFILEStream, sk_filestream_t, FileStream);
-SK4D_DEF_CLASS_MAP(SkFILEWStream, sk_filewstream_t, FileWStream)
 SK4D_DEF_CLASS_MAP(SkFont, sk_font_t, Font)
 SK4D_DEF_CLASS_MAP(SkFontMetrics, sk_fontmetrics_t, FontMetrics)
-SK4D_DEF_CLASS_MAP(SkFontMgr, sk_fontmgr_t, FontMgr)
 SK4D_DEF_CLASS_MAP(SkHighContrastConfig, sk_highcontrastconfig_t, HighContrastConfig)
 SK4D_DEF_CLASS_MAP(SkImage, sk_image_t, Image)
 SK4D_DEF_CLASS_MAP(SkImageFilter, sk_imagefilter_t, ImageFilter)
@@ -172,7 +163,6 @@ SK4D_DEF_CLASS_MAP(SkIPoint, sk_ipoint_t, IPoint)
 SK4D_DEF_CLASS_MAP(SkIRect, sk_irect_t, IRect)
 SK4D_DEF_CLASS_MAP(SkISize, sk_isize_t, ISize)
 SK4D_DEF_CLASS_MAP(SkMaskFilter, sk_maskfilter_t, MaskFilter)
-SK4D_DEF_CLASS_MAP(SkMemoryStream, sk_memorystream_t, MemoryStream)
 SK4D_DEF_CLASS_MAP(SkOpBuilder, sk_opbuilder_t, OpBuilder)
 SK4D_DEF_CLASS_MAP(SkPaint, sk_paint_t, Paint)
 SK4D_DEF_CLASS_MAP(SkPath, sk_path_t, Path)
@@ -216,9 +206,6 @@ SK4D_DEF_CLASS_MAP(SkWStream, sk_wstream_t, WStream)
 SK4D_DEF_CLASS_MAP(SkWStreamAdapter, sk_wstreamadapter_t, WStreamAdapter)
 SK4D_DEF_CLASS_MAP(SkWStreamAdapter::Procs, sk_wstreamadapter_procs_t, WStreamAdapterProcs)
 
-SK4D_DEF_ENUM_MAP(GrBackendApi, gr_backendapi_t, GrBackendAPI)
-SK4D_DEF_ENUM_MAP(GrMipmapped, bool, GrMipmapped)
-SK4D_DEF_ENUM_MAP(GrSurfaceOrigin, gr_surfaceorigin_t, GrSurfaceOrigin)
 SK4D_DEF_ENUM_MAP(SkAlphaType, sk_alphatype_t, AlphaType)
 SK4D_DEF_ENUM_MAP(SkBlendMode, sk_blendmode_t, BlendMode)
 SK4D_DEF_ENUM_MAP(SkBlurStyle, sk_blurstyle_t, BlurStyle)
@@ -329,19 +316,19 @@ static inline sk_matrix44_t ToMatrix44(const SkM44& matrix) {
 }
 
 static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
-    return {
-        SkString(metadata->title),
-        SkString(metadata->author),
-        SkString(metadata->subject),
-        SkString(metadata->keywords),
-        SkString(metadata->creator),
-        SkString(metadata->producer),
-        AsDateTime(metadata->creation),
-        AsDateTime(metadata->modified),
-        metadata->raster_dpi,
-        metadata->pdfa,
-        metadata->encoding_quality,
-    };
+    SkPDF::Metadata result;
+    result.fTitle           = SkString(metadata->title);
+    result.fAuthor          = SkString(metadata->author);
+    result.fSubject         = SkString(metadata->subject);
+    result.fKeywords        = SkString(metadata->keywords);
+    result.fCreator         = SkString(metadata->creator);
+    result.fProducer        = SkString(metadata->producer);
+    result.fCreation        = AsDateTime(metadata->creation);
+    result.fModified        = AsDateTime(metadata->modified);
+    result.fRasterDPI       = metadata->raster_dpi;
+    result.fPDFA            = metadata->pdfa;
+    result.fEncodingQuality = metadata->encoding_quality;
+    return result;
 }
 
 
@@ -369,15 +356,34 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
 #endif
 
 
-// GPU
+// Ganesh
 
 #if SK_SUPPORT_GPU
     #define SK4D_ONLY_GPU(...) SK4D_FIRST_ARG(__VA_ARGS__)
 
-    #include "include/gpu/GrDirectContext.h"    
+    #include "include/gpu/Gr4DContextOptions.h"
+    #include "include/gpu/Gr4DShaderErrorHandler.h"
+    #include "include/gpu/GrBackendSurface.h"
     #include "include/gpu/GrContextOptions.h"
+    #include "include/gpu/GrDirectContext.h"    
+    #include "include/gpu/GrTypes.h"
+    #include "include/gpu/ShaderErrorHandler.h"
 
+    SK4D_DEF_ENUM_MAP(GrBackendApi, gr_backendapi_t, GrBackendAPI)
+    SK4D_DEF_ENUM_MAP(GrContextOptions::ShaderCacheStrategy, gr_shadercachestrategy_t, GrShaderCacheStrategy)
+    SK4D_DEF_ENUM_MAP(GrMipmapped, bool, GrMipmapped)
+    SK4D_DEF_ENUM_MAP(GrProtected, bool, GrProtected)
+    SK4D_DEF_ENUM_MAP(GrSurfaceOrigin, gr_surfaceorigin_t, GrSurfaceOrigin)
+
+    SK4D_DEF_CLASS_MAP(GrBackendRenderTarget, gr_backendrendertarget_t, GrBackendRenderTarget)
+    SK4D_DEF_CLASS_MAP(GrBackendTexture, gr_backendtexture_t, GrBackendTexture)
+    SK4D_DEF_CLASS_MAP(GrContextOptions::PersistentCache, gr_persistentcache_t, GrPersistentCache)
     SK4D_DEF_CLASS_MAP(GrDirectContext, gr_directcontext_t, GrDirectContext)
+    SK4D_DEF_CLASS_MAP(GrPersistentCacheBaseClass, gr_persistentcachebaseclass_t, GrPersistentCacheBaseClass)
+    SK4D_DEF_CLASS_MAP(GrPersistentCacheBaseClass::Procs, gr_persistentcachebaseclass_procs_t, GrPersistentCacheBaseClassProcs)
+    SK4D_DEF_CLASS_MAP(GrShaderErrorHandlerBaseClass, gr_shadererrorhandlerbaseclass_t, GrShaderErrorHandlerBaseClass)
+    SK4D_DEF_CLASS_MAP(GrShaderErrorHandlerBaseClass::Procs, gr_shadererrorhandlerbaseclass_procs_t, GrShaderErrorHandlerBaseClassProcs)
+    SK4D_DEF_CLASS_MAP(skgpu::ShaderErrorHandler, gr_shadererrorhandler_t, GrShaderErrorHandler)
 
     static inline GrContextOptions AsGrContextOptions(const gr_contextoptions_t* options) {
         GrContextOptions result;
@@ -387,6 +393,9 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
         result.fGlyphCacheTextureMaximumBytes = options->glyph_cache_texture_maximum_bytes;
         result.fAvoidStencilBuffers           = options->avoid_stencil_buffers;
         result.fRuntimeProgramCacheSize       = options->runtime_program_cache_size;
+        result.fPersistentCache               = AsGrPersistentCache(options->persistent_cache);
+        result.fShaderCacheStrategy           = AsGrShaderCacheStrategy(options->shader_cache_strategy);
+        result.fShaderErrorHandler            = AsGrShaderErrorHandler(options->shader_error_handler);
         return result;
     }
 
@@ -429,10 +438,86 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
     #else
         #define SK4D_ONLY_METAL(...) SK4D_SKIP_ARG(__VA_ARGS__)
     #endif
+
+    #ifdef SK_VULKAN
+        #define SK4D_ONLY_VULKAN(...) SK4D_FIRST_ARG(__VA_ARGS__)
+
+        #include "include/gpu/vk/GrVkBackendContext.h"
+        #include "include/gpu/vk/GrVkExtensions.h"
+        #include "include/gpu/vk/GrVkTypes.h"
+        #include "include/gpu/vk/VulkanTypes.h"
+
+        SK4D_DEF_TYPE_MAP(PFN_vkVoidFunction, void*, PFN_vkVoidFunction)
+        SK4D_DEF_TYPE_MAP(VkDevice, gr_vk_device_t, VkDevice)
+        SK4D_DEF_TYPE_MAP(VkDeviceMemory, gr_vk_devicememory_t, VkDeviceMemory)
+        SK4D_DEF_TYPE_MAP(VkImage, gr_vk_image_t, VkImage)
+        SK4D_DEF_TYPE_MAP(VkInstance, gr_vk_instance_t, VkInstance)
+        SK4D_DEF_TYPE_MAP(VkPhysicalDevice, gr_vk_physicaldevice_t, VkPhysicalDevice)
+        SK4D_DEF_TYPE_MAP(VkQueue, gr_vk_queue_t, VkQueue)
+
+        SK4D_DEF_ENUM_MAP(VkFormat, gr_vk_format_t, VkFormat)
+        SK4D_DEF_ENUM_MAP(VkImageLayout, gr_vk_imagelayout_t, VkImageLayout)
+        SK4D_DEF_ENUM_MAP(VkImageTiling, gr_vk_imagetiling_t, VkImageTiling)
+        SK4D_DEF_ENUM_MAP(VkSharingMode, gr_vk_sharingmode_t, VkSharingMode)
+        
+        SK4D_DEF_CLASS_MAP(GrVkExtensions, gr_vk_extensions_t, GrVkExtensions)
+        SK4D_DEF_CLASS_MAP(GrVkYcbcrConversionInfo, gr_vk_ycbcrconversioninfo_t, GrVkYcbcrConversionInfo)
+        SK4D_DEF_CLASS_MAP(VkPhysicalDeviceFeatures, gr_vk_physicaldevicefeatures_t, VkPhysicalDeviceFeatures)
+        SK4D_DEF_CLASS_MAP(VkPhysicalDeviceFeatures2, gr_vk_physicaldevicefeatures2_t, VkPhysicalDeviceFeatures2)
+          
+        static inline GrVkAlloc AsGrVkAlloc(const gr_vk_alloc_t* alloc) {
+            GrVkAlloc result;
+            result.fMemory = AsVkDeviceMemory(alloc->device_memory);
+            result.fOffset = alloc->offset;
+            result.fSize   = alloc->size;
+            result.fFlags  = alloc->flags;
+            return result;
+        }
+
+        static inline GrVkBackendContext AsGrVkBackendContext(const gr_vk_backendcontext_t* context) {
+            GrVkBackendContext result;
+            result.fInstance           = AsVkInstance(context->instance);
+            result.fPhysicalDevice     = AsVkPhysicalDevice(context->physical_device);
+            result.fDevice             = AsVkDevice(context->device);
+            result.fQueue              = AsVkQueue(context->queue);
+            result.fGraphicsQueueIndex = context->graphics_queue_index;
+            result.fMaxAPIVersion      = context->max_version;
+            result.fVkExtensions       = AsGrVkExtensions(context->extensions);
+            result.fDeviceFeatures     = AsVkPhysicalDeviceFeatures(context->physical_device_features);
+            result.fDeviceFeatures2    = AsVkPhysicalDeviceFeatures2(context->physical_device_features2);
+            if (context->get_context != nullptr) {
+                result.fGetProc = [context = context->get_context, proc = context->get_proc](const char name[], VkInstance instance, VkDevice device) {
+                    return AsPFN_vkVoidFunction(proc(context, name, ToVkInstance(instance), ToVkDevice(device)));
+                };
+            }
+            result.fProtectedContext = AsGrProtected(context->protected_context);
+            return result;
+        }
+
+        static inline GrVkImageInfo AsGrVkImageInfo(const gr_vk_imageinfo_t* info) {
+            GrVkImageInfo result;
+            result.fImage               = AsVkImage(info->image);
+            result.fAlloc               = AsGrVkAlloc(&info->alloc);
+            result.fImageTiling         = AsVkImageTiling(info->image_tiling);
+            result.fImageLayout         = AsVkImageLayout(info->image_layout);
+            result.fFormat              = AsVkFormat(info->format);
+            result.fImageUsageFlags     = info->image_usage_flags;
+            result.fSampleCount         = info->sample_count;
+            result.fLevelCount          = info->level_count;
+            result.fCurrentQueueFamily  = info->current_queue_family;
+            result.fProtected           = AsGrProtected(info->protected_image);
+            result.fYcbcrConversionInfo = AsGrVkYcbcrConversionInfo(info->ycbcr_conversion_info);
+            result.fSharingMode         = AsVkSharingMode(info->sharing_mode);
+            return result;
+        }
+    #else
+        #define SK4D_ONLY_VULKAN(...) SK4D_SKIP_ARG(__VA_ARGS__)
+    #endif
 #else
     #define SK4D_ONLY_GPU(...) SK4D_SKIP_ARG(__VA_ARGS__)
     #define SK4D_ONLY_GL(...) SK4D_SKIP_ARG(__VA_ARGS__)
     #define SK4D_ONLY_METAL(...) SK4D_SKIP_ARG(__VA_ARGS__)
+    #define SK4D_ONLY_VULKAN(...) SK4D_SKIP_ARG(__VA_ARGS__)
 #endif
 
 #endif

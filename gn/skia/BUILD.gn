@@ -20,6 +20,8 @@ declare_args() {
   malloc = ""
   werror = false
   xcode_sysroot = ""
+
+  sysroot = ""
 }
 
 if (is_ios && xcode_sysroot == "") {
@@ -57,21 +59,26 @@ config("default") {
   ldflags = []
   libs = []
 
-  if (is_win) {
-    if (is_debug) {
-      cflags += [ "/MTd" ]
+  if (is_win) {    
+    if (win_clang) {
+      cflags += [ "-Wno-align-mismatch" ]
     } else {
-      cflags += [ "/MT" ]
+      if (is_debug) {
+        cflags += [ "/MTd" ]
+      } else {
+        cflags += [ "/MT" ]
+      }
+      cflags += [ "/wd4244" ]
     }
-  }
 
-  # Disable warnings about unknown attributes.
-  # (These unknown attribute warnings are on by default, so we don't make
-  # disabling them part of :warnings, as some targets remove :warnings.)
-  if (is_win && !is_clang) {
-    cflags += [ "/wd5030" ]
-  } else {
-    cflags += [ "-Wno-attributes" ]
+    # Disable warnings about unknown attributes.
+    # (These unknown attribute warnings are on by default, so we don't make
+    # disabling them part of :warnings, as some targets remove :warnings.)
+    if (!is_clang) {
+      cflags += [ "/wd5030" ]
+    } else {
+      cflags += [ "-Wno-attributes" ]
+    }
   }
 
   if (is_fuchsia && using_fuchsia_sdk) {
@@ -94,7 +101,7 @@ config("default") {
     asmflags += [ target_triple ]
   }
 
-  if (is_win) {
+  if (is_win && !win_clang) {
     if (is_clang && target_cpu == "arm64") {
       cflags += [ "--target=arm64-windows" ]
     }
@@ -110,13 +117,19 @@ config("default") {
       "NOMINMAX",
     ]
 
-    _include_dirs = [
-      "$win_vc/Tools/MSVC/$win_toolchain_version/include",
-      "$win_sdk/Include/$win_sdk_version/shared",
-      "$win_sdk/Include/$win_sdk_version/ucrt",
-      "$win_sdk/Include/$win_sdk_version/um",
-      "$win_sdk/Include/$win_sdk_version/winrt",
-    ]
+    _include_dirs = []
+
+    if (win_vc != "") {
+      _include_dirs += [ "$win_vc/Tools/MSVC/$win_toolchain_version/include" ]
+    }
+    if (win_sdk != "") {
+      _include_dirs += [
+        "$win_sdk/Include/$win_sdk_version/shared",
+        "$win_sdk/Include/$win_sdk_version/ucrt",
+        "$win_sdk/Include/$win_sdk_version/um",
+        "$win_sdk/Include/$win_sdk_version/winrt",
+      ]
+    }
 
     if (is_clang) {
       foreach(dir, _include_dirs) {
@@ -129,11 +142,17 @@ config("default") {
       include_dirs = _include_dirs
     }
 
-    lib_dirs = [
-      "$win_sdk/Lib/$win_sdk_version/ucrt/$target_cpu",
-      "$win_sdk/Lib/$win_sdk_version/um/$target_cpu",
-      "$win_vc/Tools/MSVC/$win_toolchain_version/lib/$target_cpu",
-    ]
+    lib_dirs = []
+
+    if (win_sdk != "") {
+      lib_dirs += [
+        "$win_sdk/Lib/$win_sdk_version/ucrt/$target_cpu",
+        "$win_sdk/Lib/$win_sdk_version/um/$target_cpu",
+      ]
+    }
+    if (win_vc != "") {
+      lib_dirs += [ "$win_vc/Tools/MSVC/$win_toolchain_version/lib/$target_cpu" ]
+    }
   } else {
     cflags += [
       "-fstrict-aliasing",
@@ -174,95 +193,104 @@ config("default") {
 
   if (is_android) {
     cflags += [ "--sysroot=$ndk/toolchains/llvm/prebuilt/$ndk_host/sysroot" ]
-    ldflags += [ "-static-libstdc++" ]
+    ldflags += [
+      "-static-libgcc",
+      "-static-libstdc++",
+    ]
+  }
+
+  if (is_linux) {
+    if (target_cpu == "x64") {
+      asmflags += [
+        "-target",
+        "x86_64-unknown-linux-gnu",
+      ]
+      cflags += [
+        "-target",
+        "x86_64-unknown-linux-gnu",
+      ]
+      ldflags += [
+        "-target",
+        "x86_64-unknown-linux-gnu",
+      ]
+    }
+
+    if (sysroot != "") {
+      asmflags += [ "--sysroot=$sysroot" ]
+      cflags += [ "--sysroot=$sysroot" ]
+      ldflags += [ "--sysroot=$sysroot" ]
+    }
+
+    cflags += [ "-Wno-psabi" ]
+
+    ldflags += [
+      "-static-libgcc",
+      "-static-libstdc++",
+    ]
+
+    libs += [ "pthread" ]
   }
 
   if (is_ios) {
     if (target_cpu == "arm") {
-      _arch_flags = [
-        "-arch",
-        "armv7",
-      ]
+      _target = "armv7"
     } else if (target_cpu == "arm64") {
-      _arch_flags = [
-        "-arch",
-        "arm64",
-        "-arch",
-        "arm64e",
-      ]
+      _target = "arm64"
     } else if (target_cpu == "x86") {
-      _arch_flags = [
-        "-arch",
-        "i386",
-      ]
+      _target = "i386"
     } else if (target_cpu == "x64") {
-      _arch_flags = [
-        "-arch",
-        "x86_64",
-      ]
+      _target = "x86_64"
     } else {
-      _arch_flags = [
-        "-arch",
-        target_cpu,
-      ]
+      _target = target_cpu
+    }
+
+    if (is_tvos) {
+      _target += "-apple-tvos"
+    } else {
+      _target += "-apple-ios"
+    }
+
+    if (ios_min_target != "") {
+      _target += ios_min_target
+    }
+
+    if (ios_use_simulator) {
+      _target += "-simulator"
     }
 
     asmflags += [
-                  "-isysroot",
-                  xcode_sysroot,
-                ] + _arch_flags
+      "-target",
+      _target,
+    ]
     cflags += [
-                "-isysroot",
-                xcode_sysroot,
-              ] + _arch_flags
-    cflags_cc += [
+      "-target",
+      _target,
+    ]
+    ldflags += [
+      "-target",
+      _target,
+    ]
+
+    asmflags += [
+      "-isysroot",
+      "$xcode_sysroot",
+    ]
+    cflags += [
+      "-isysroot",
+      "$xcode_sysroot",
       "-stdlib=libc++",
       "-fno-aligned-allocation",
     ]
     ldflags += [
-                 "-isysroot",
-                 xcode_sysroot,
-                 "-stdlib=libc++",
-               ] + _arch_flags
-    libs += [ "objc" ]
-    if (ios_min_target != "") {
-      cflags += [ "-miphoneos-version-min=$ios_min_target" ]
-      asmflags += [ "-miphoneos-version-min=$ios_min_target" ]
-      ldflags += [ "-miphoneos-version-min=$ios_min_target" ]
-    }
-  }
+      "-isysroot",
+      "$xcode_sysroot",
+      "-stdlib=libc++",
+    ]
 
-  if (is_linux) {
-    libs += [ "pthread" ]
+    libs += [ "objc" ]
   }
 
   if (is_mac) {
-    # If there was a xcode_sysroot set in args or calculated then use it, else don't set anything
-    # because the XCode cc/c++ already know all this stuff.
-    if (xcode_sysroot != "") {
-      asmflags += [
-        "-isysroot",
-        xcode_sysroot,
-      ]
-      cflags += [
-        "-isysroot",
-        xcode_sysroot,
-      ]
-      ldflags += [
-        "-isysroot",
-        xcode_sysroot,
-      ]
-    }
-
-    # Disable linker warnings.  They're usually just annoyances like,
-    #   ld: warning: text-based stub file
-    #     /System/Library/Frameworks/foo.framework/foo.tbd and library file
-    #     /System/Library/Frameworks/foo.framework/foo are out of sync.
-    #     Falling back to library file for linking.
-    ldflags += [ "-Wl,-w" ]
-
-    # As of 11/2020, gn is an x86 binary and defaults the host_cpu to x86_64.
-    # This allows you to build arm64 mac binaries by setting target_cpu = "arm64"
     asmflags += [ "-target" ]
     cflags += [ "-target" ]
     ldflags += [ "-target" ]
@@ -271,9 +299,40 @@ config("default") {
       cflags += [ "arm64-apple-macos11" ]
       ldflags += [ "arm64-apple-macos11" ]
     } else {
-      asmflags += [ "x86_64-apple-macos10.9" ]
-      cflags += [ "x86_64-apple-macos10.9" ]
-      ldflags += [ "x86_64-apple-macos10.9" ]
+      asmflags += [ "x86_64-apple-macos10.13" ]
+      cflags += [ "x86_64-apple-macos10.13" ]
+      ldflags += [ "x86_64-apple-macos10.13" ]
+    }
+
+    # If there was a xcode_sysroot set in args or calculated then use it, else don't set anything
+    # because the XCode cc/c++ already know all this stuff.
+    if (xcode_sysroot != "") {
+      asmflags += [
+        "-isysroot",
+        "$xcode_sysroot",
+      ]
+      cflags += [
+        "-isysroot",
+        "$xcode_sysroot",
+      ]
+      ldflags += [
+        "-isysroot",
+        "$xcode_sysroot",
+      ]
+    }
+
+    cflags += [
+      "-Wno-psabi",
+      "-Wno-deprecated-declarations",
+    ]
+
+    # Disable linker warnings.  They're usually just annoyances like,
+    #   ld: warning: text-based stub file
+    #     /System/Library/Frameworks/foo.framework/foo.tbd and library file
+    #     /System/Library/Frameworks/foo.framework/foo are out of sync.
+    #     Falling back to library file for linking.
+    if (host_os == "mac") {
+      ldflags += [ "-Wl,-w" ]
     }
   }
 
@@ -378,7 +437,7 @@ config("warnings") {
     }
   }
 
-  if (is_win) {
+  if (is_win && !win_clang) {
     cflags += [
       "/W3",  # Turn on lots of warnings.
 
@@ -439,7 +498,17 @@ config("warnings") {
       # This was deprecated in Clang 14 and removed in Clang 15. It might still
       # fire with older Clangs, so disable it explicitly.
       "-Wno-weak-template-vtables",
+
+      # Ignore warnings during the development build referring to "sk4d_dtoa.cpp"
+      "-Wno-sign-compare",
+      "-Wno-implicit-fallthrough",
+      "-Wno-conditional-uninitialized",
     ]
+
+    # Ignore warnings during the development build
+    if (is_mac || is_ios) {
+      cflags += [ "-Wno-nullable-to-nonnull-conversion" ]
+    }
 
     if (target_cpu == "arm" && is_ios) {
       # Clang seems to think new/malloc will only be 4-byte aligned on 32-bit iOS.
@@ -557,6 +626,10 @@ config("warnings") {
   }
 
   cflags_objcc += cflags_cc
+
+  if (win_clang) {
+    cflags += [ "-Wno-used-but-marked-unused" ]
+  }
 }
 config("warnings_for_public_headers") {
   if (is_clang) {
@@ -583,7 +656,7 @@ config("debug_symbols") {
       "-gline-tables-only",
       "-funwind-tables",  # Helps make in-process backtraces fuller.
     ]
-  } else if (is_win) {
+  } else if (is_win && !win_clang) {
     cflags = [ "/Z7" ]
     if (is_clang) {
       cflags += [ "-gcodeview-ghash" ]
@@ -598,7 +671,7 @@ config("debug_symbols") {
 
 config("no_rtti") {
   if (sanitize != "ASAN") {  # -fsanitize=vptr requires RTTI
-    if (is_win) {
+    if (is_win && !win_clang) {
       cflags_cc = [ "/GR-" ]
     } else {
       cflags_cc = [ "-fno-rtti" ]
@@ -608,7 +681,7 @@ config("no_rtti") {
 }
 
 config("optimize") {
-  if (is_win) {
+  if (is_win && !win_clang) {
     cflags = [
       "/O2",
       "/Zc:inline",
@@ -622,10 +695,12 @@ config("optimize") {
     if (is_mac || is_ios) {
       ldflags = [ "-dead_strip" ]
     } else if (!is_wasm) {
-      cflags += [
-        "-fdata-sections",
-        "-ffunction-sections",
-      ]
+      if (!is_win) {
+        cflags += [
+          "-fdata-sections",
+          "-ffunction-sections",
+        ]
+      }
       ldflags = [ "-Wl,--gc-sections" ]
     }
   }

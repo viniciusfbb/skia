@@ -9,7 +9,7 @@ import("../third_party.gni")
 import("icu.gni")
 
 declare_args() {
-  skia_use_system_icu = is_official_build && !is_wasm
+  skia_use_system_icu = false
 }
 
 if (skia_use_system_icu) {
@@ -84,19 +84,32 @@ if (skia_use_system_icu) {
       ".",
     ]
   }
-
-  third_party("icu") {
-    public_defines = [
+  
+  config("icu_config") {
+    defines = [
       "U_USING_ICU_NAMESPACE=0",
       "U_DISABLE_RENAMING",
     ]
-
-    public_include_dirs = [
+    if (is_win) {
+      defines += [ "U_NOEXCEPT=" ]
+    }    
+    include_dirs = [
       "../externals/icu/source/common",
       "../externals/icu/source/i18n",
     ]
+  }
 
-    configs = [ "//gn/portable:add_rtti" ]
+  static_library("icu") {
+    public_configs = [ ":icu_config" ]
+
+    configs -= [ "//gn/skia:no_rtti" ]
+    configs += [ "//gn/portable:add_rtti" ]
+
+    if (is_win && !win_clang) {
+      cflags = [ "/w" ]
+    } else {
+      cflags = [ "-w" ]
+    }
 
     defines = [
       "_XOPEN_SOURCE=0",
@@ -106,14 +119,20 @@ if (skia_use_system_icu) {
       "U_STATIC_IMPLEMENTATION",
     ]
 
+    if (is_win) {
+      if (win_clang) {
+        libs = [ "advapi32" ]
+      } else {
+        libs = [ "AdvAPI32.Lib" ]
+      }
+    }
+
     sources = icu_sources  
     if (target_cpu == "wasm") {
       defines += [ "__i386__" ]
     } else {
       if (is_win) {
-        public_defines += [ "U_NOEXCEPT=" ]
         deps = [ ":make_inline_data_assembly" ]
-        libs = [ "Advapi32.lib" ]
         sources += [ inline_data_assembly ]
       } else {
         deps = [ ":make_data_assembly" ]

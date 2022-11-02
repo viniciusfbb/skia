@@ -63,9 +63,8 @@ bool sk4d_image_is_valid(const sk_image_t* self, gr_directcontext_t* context) {
     return AsImage(self)->isValid(SK4D_ONLY_GPU(AsGrDirectContext(context), nullptr));
 }
 
-gr_backendtexture_t* sk4d_image_make_backend_texture(sk_image_t* self, gr_directcontext_t* context) {
-    SK4D_ONLY_GPU(auto r = std::make_unique<GrBackendTexture>();)
-    return SK4D_ONLY_GPU((SkImage::MakeBackendTextureFromSkImage(AsGrDirectContext(context), std::move(sk_sp<SkImage>(AsImage(self))), r.get(), nullptr)) ? ToGrBackendTexture(r.release()) : nullptr, nullptr);
+sk_image_t* sk4d_image_make_cross_context(gr_directcontext_t* context, const sk_pixmap_t* pixmap, bool build_mips, bool limit_to_max_texture_size) {
+    return SK4D_ONLY_GPU(ToImage(SkImage::MakeCrossContextFromPixmap(AsGrDirectContext(context), AsPixmap(*pixmap), build_mips, limit_to_max_texture_size).release()), nullptr);
 }
 
 sk_image_t* sk4d_image_make_from_adopted_texture(gr_directcontext_t* context, const gr_backendtexture_t* texture, gr_surfaceorigin_t origin, sk_colortype_t color_type, sk_alphatype_t alpha_type, sk_colorspace_t* color_space) {
@@ -86,6 +85,16 @@ sk_image_t* sk4d_image_make_from_encoded_stream(sk_stream_t* stream) {
     if (!data)
         return nullptr;
     return ToImage(SkImage::MakeFromEncoded(data).release());
+}
+
+sk_image_t* sk4d_image_make_from_picture(sk_picture_t* picture, const sk_isize_t* dimensions, const sk_matrix_t* matrix, const sk_paint_t* paint, sk_colorspace_t* color_space, const sk_surfaceprops_t* props) {
+    SkMatrix m;
+    if (matrix)
+        m = AsMatrix(matrix);
+    if (props)
+        return ToImage(SkImage::MakeFromPicture(sk_ref_sp(AsPicture(picture)), AsISize(*dimensions), (matrix) ? &m : nullptr, AsPaint(paint), SkImage::BitDepth::kU8, sk_ref_sp(AsColorSpace(color_space)), *AsSurfaceProps(props)).release());
+    else
+        return ToImage(SkImage::MakeFromPicture(sk_ref_sp(AsPicture(picture)), AsISize(*dimensions), (matrix) ? &m : nullptr, AsPaint(paint), SkImage::BitDepth::kU8, sk_ref_sp(AsColorSpace(color_space))).release());
 }
 
 sk_image_t* sk4d_image_make_from_raster(const sk_pixmap_t* pixmap, sk_image_raster_release_proc proc, void* proc_context) {
@@ -111,14 +120,14 @@ sk_image_t* sk4d_image_make_raster_image(const sk_image_t* self) {
 sk_shader_t* sk4d_image_make_raw_shader(const sk_image_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, const sk_samplingoptions_t* sampling, const sk_matrix_t* local_matrix) {
     SkMatrix m;
     if (local_matrix)
-      m = AsMatrix(local_matrix);
+        m = AsMatrix(local_matrix);
     return ToShader(AsImage(self)->makeRawShader(AsTileMode(tile_mode_x), AsTileMode(tile_mode_y), AsSamplingOptions(*sampling), (local_matrix) ? &m : nullptr).release());
 }
 
 sk_shader_t* sk4d_image_make_shader(const sk_image_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, const sk_samplingoptions_t* sampling, const sk_matrix_t* local_matrix) {
     SkMatrix m;
     if (local_matrix)
-      m = AsMatrix(local_matrix);
+        m = AsMatrix(local_matrix);
     return ToShader(AsImage(self)->makeShader(AsTileMode(tile_mode_x), AsTileMode(tile_mode_y), AsSamplingOptions(*sampling), (local_matrix) ? &m : nullptr).release());
 }
 

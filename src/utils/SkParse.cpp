@@ -7,6 +7,10 @@
 
 #include "include/utils/SkParse.h"
 
+#ifdef SK4D_WORKAROUNDS
+    #include "sk4d/miscellaneous/sk4d_dtoa.h"
+#endif
+
 #include <cstdlib>
 #include <string>
 

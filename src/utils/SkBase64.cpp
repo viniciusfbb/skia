@@ -27,7 +27,7 @@ static const signed char decodeData[] = {
     41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51
 };
 
-#if defined _WIN32  // disable 'two', etc. may be used without having been initialized
+#if defined(_WIN32) && !defined(__MINGW32__)  // disable 'two', etc. may be used without having been initialized
 #pragma warning ( push )
 #pragma warning ( disable : 4701 )
 #endif
@@ -104,7 +104,7 @@ goHome:
     return kNoError;
 }
 
-#if defined _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #pragma warning ( pop )
 #endif
 

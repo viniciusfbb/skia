@@ -14,11 +14,14 @@
 #include "modules/skparagraph/include/TextShadow.h"
 #include "modules/skparagraph/include/TextStyle.h"
 #include "modules/skparagraph/include/TypefaceFontProvider.h"
+#include "modules/skparagraph/include/Paragraph.h"
 
 
 /*
  * ASSERTIONS OF DEFINITIONS
  */
+
+static_assert(static_cast<int>(skia::textlayout::Paragraph::kWhiteSpace_VisitorFlag) == WHITE_SPACE_SK_PARAGRAPH_VISITOR_FLAG, "");
 
 static_assert(static_cast<int>(skia::textlayout::TextDecoration::kUnderline)   == UNDERLINE_SK_TEXT_DECORATION_FLAG,    "");
 static_assert(static_cast<int>(skia::textlayout::TextDecoration::kOverline)    == OVERLINE_SK_TEXT_DECORATION_FLAG,     "");
@@ -36,10 +39,11 @@ static_assert(static_cast<int>(skia::textlayout::TextHeightBehavior::kDisableLas
  *
  */
 
-static_assert(sizeof(skia::textlayout::PlaceholderStyle)     == sizeof(sk_placeholderstyle_t), "");
-static_assert(sizeof(skia::textlayout::PositionWithAffinity) == sizeof(sk_positionaffinity_t), "");
-static_assert(sizeof(skia::textlayout::TextBox)              == sizeof(sk_textbox_t),          "");
-static_assert(sizeof(skia::textlayout::TextShadow)           == sizeof(sk_textshadow_t),       "");
+static_assert(sizeof(skia::textlayout::Paragraph::VisitorInfo) == sizeof(sk_paragraphvisitorinfo_t), "");
+static_assert(sizeof(skia::textlayout::PlaceholderStyle)       == sizeof(sk_placeholderstyle_t),     "");
+static_assert(sizeof(skia::textlayout::PositionWithAffinity)   == sizeof(sk_positionaffinity_t),     "");
+static_assert(sizeof(skia::textlayout::TextBox)                == sizeof(sk_textbox_t),              "");
+static_assert(sizeof(skia::textlayout::TextShadow)             == sizeof(sk_textshadow_t),           "");
 
 
 /*

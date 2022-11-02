@@ -15,6 +15,8 @@ SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
 SK4D_API sk_data_t* sk4d_data_make_empty(void);
 SK4D_API sk_data_t* sk4d_data_make_with_copy(const void* data, size_t size);
+SK4D_API void sk4d_data_ref(const sk_data_t* self);
+SK4D_API void sk4d_data_unref(const sk_data_t* self);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

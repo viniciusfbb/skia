@@ -13,6 +13,7 @@
 #include "modules/skunicode/include/SkUnicode.h"
 #include "modules/skunicode/include/sk4d_unicode_types.h"
 
+SK4D_DEF_CLASS_MAP(SkBreakIterator, sk_unicodebreakiterator_t, BreakIterator)
 SK4D_DEF_CLASS_MAP(SkUnicode, sk_unicode_t, Unicode)
 
 SK4D_DEF_ENUM_MAP(SkBidiIterator::Direction, sk_direction_t, Direction)

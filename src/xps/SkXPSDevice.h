@@ -100,6 +100,13 @@ protected:
     void drawDevice(SkBaseDevice*, const SkSamplingOptions&, const SkPaint&) override;
 
 private:
+#if defined(__MINGW32__)
+    class TypefaceUse;
+    struct Utils {
+        static HRESULT subset_typeface(const TypefaceUse& current);
+    };
+#endif
+
     class TypefaceUse {
     public:
         TypefaceUse(SkTypefaceID id, int index, std::unique_ptr<SkStream> data,
@@ -112,7 +119,11 @@ private:
         const SkTScopedComPtr<IXpsOMFontResource> xpsFont;
         SkBitSet glyphsUsed;
     };
+#if defined(__MINGW32__)
+    friend HRESULT Utils::subset_typeface(const TypefaceUse& current);
+#else
     friend HRESULT subset_typeface(const TypefaceUse& current);
+#endif
 
     bool createCanvasForLayer();
 

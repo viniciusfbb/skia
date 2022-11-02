@@ -11,7 +11,7 @@
 #include "src/gpu/ganesh/GrRenderTargetProxy.h"
 #include "src/gpu/ganesh/GrTextureProxy.h"
 
-#ifdef SK_BUILD_FOR_WIN
+#if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
 // Windows gives warnings about inheriting asTextureProxy/asRenderTargetProxy via dominance.
 #pragma warning(push)
 #pragma warning(disable: 4250)
@@ -73,7 +73,7 @@ private:
     SkDEBUGCODE(void onValidateSurface(const GrSurface*) override;)
 };
 
-#ifdef SK_BUILD_FOR_WIN
+#if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
 #pragma warning(pop)
 #endif
 

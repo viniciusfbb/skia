@@ -16,12 +16,12 @@
 #include "include/utils/SkParsePath.h"
 #include "src/core/SkGeometry.h"
 
-#include <cstdio>
-
 #ifdef SK4D_WORKAROUNDS
     #include <locale>
     #include <sstream>
 #endif
+
+#include <cstdio>
 
 static inline bool is_between(int c, int min, int max) {
     return (unsigned)(c - min) <= (unsigned)(max - min);

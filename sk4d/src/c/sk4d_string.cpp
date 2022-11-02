@@ -19,7 +19,3 @@ void sk4d_string_destroy(sk_string_t* self) {
 const char* sk4d_string_get_text(const sk_string_t* self) {
     return AsString(self)->c_str();
 }
-
-void sk4d_string_set_text(sk_string_t* self, const char value[]) {
-    AsString(self)->set(value);
-}

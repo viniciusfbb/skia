@@ -86,11 +86,13 @@ void sk4d_font_get_paths(const sk_font_t* self, const sk_glyphid_t glyphs[], int
         sk_font_path_proc fProc;
     } rec = { proc_context, proc };
 
-    AsFont(self)->getPaths(glyphs, count, [](const SkPath* path, const SkMatrix& matrix, void* ctx) {
-        Rec*        rec = reinterpret_cast<Rec*>(ctx);
-        sk_matrix_t m   = ToMatrix(matrix);
-        rec->fProc(ToPath(path), &m, rec->fContext);
-    }, &rec);
+    AsFont(self)->getPaths(glyphs, count,
+        [](const SkPath* path, const SkMatrix& matrix, void* ctx) {
+            Rec*        rec = reinterpret_cast<Rec*>(ctx);
+            sk_matrix_t m   = ToMatrix(matrix);
+            rec->fProc(ToPath(path), &m, rec->fContext);
+        },
+        &rec);
 }
 
 void sk4d_font_get_positions(const sk_font_t* self, const sk_glyphid_t glyphs[], int32_t count, sk_point_t result[], const sk_point_t* origin) {

@@ -41,6 +41,10 @@ sk_color_t sk4d_pixmap_get_color(const sk_pixmap_t* self, int32_t x, int32_t y) 
     return AsPixmap(self)->getColor(x, y);
 }
 
+void sk4d_pixmap_get_colorf(const sk_pixmap_t* self, int32_t x, int32_t y, sk_color4f_t* result) {
+    *result = ToColor4f(AsPixmap(self)->getColor4f(x, y));
+}
+
 sk_colorspace_t* sk4d_pixmap_get_color_space(const sk_pixmap_t* self) {
     return ToColorSpace(AsPixmap(self)->refColorSpace().release());
 }

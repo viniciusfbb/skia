@@ -16,7 +16,6 @@ SK4D_C_PLUS_PLUS_BEGIN_GUARD
 SK4D_API sk_string_t* sk4d_string_create(void);
 SK4D_API void sk4d_string_destroy(sk_string_t* self);
 SK4D_API const char* sk4d_string_get_text(const sk_string_t* self);
-SK4D_API void sk4d_string_set_text(sk_string_t* self, const char value[]);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

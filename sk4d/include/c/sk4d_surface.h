@@ -18,7 +18,6 @@ SK4D_API void sk4d_surface_flush(sk_surface_t* self);
 SK4D_API void sk4d_surface_flush_and_submit(sk_surface_t* self, bool sync_cpu);
 SK4D_API sk_canvas_t* sk4d_surface_get_canvas(sk_surface_t* self);
 SK4D_API void sk4d_surface_get_props(const sk_surface_t* self, /*out*/ sk_surfaceprops_t* result);
-SK4D_API sk_surface_t* sk4d_surface_make_from_ca_metal_layer(gr_directcontext_t* context, gr_mtl_handle_t layer, gr_surfaceorigin_t origin, int32_t sample_count, sk_colortype_t color_type, sk_colorspace_t* color_space, const sk_surfaceprops_t* props, /*out*/ gr_mtl_handle_t* drawable);
 SK4D_API sk_surface_t* sk4d_surface_make_from_mtk_view(gr_directcontext_t* context, gr_mtl_handle_t view, gr_surfaceorigin_t origin, int32_t sample_count, sk_colortype_t color_type, sk_colorspace_t* color_space, const sk_surfaceprops_t* props);
 SK4D_API sk_surface_t* sk4d_surface_make_from_render_target(gr_directcontext_t* context, const gr_backendrendertarget_t* render_target, gr_surfaceorigin_t origin, sk_colortype_t color_type, sk_colorspace_t* color_space, const sk_surfaceprops_t* props);
 SK4D_API sk_surface_t* sk4d_surface_make_from_texture(gr_directcontext_t* context, const gr_backendtexture_t* texture, gr_surfaceorigin_t origin, int32_t sample_count, sk_colortype_t color_type, sk_colorspace_t* color_space, const sk_surfaceprops_t* props);

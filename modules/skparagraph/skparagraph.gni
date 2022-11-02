@@ -15,7 +15,8 @@ skparagraph_public = [
   "$_modules/skparagraph/include/TextShadow.h",
   "$_modules/skparagraph/include/TextStyle.h",
   "$_modules/skparagraph/include/TypefaceFontProvider.h",
-  "$_modules/skparagraph/utils/TestFontCollection.h",
+  # Skia4Delphi build workaround
+  #"$_modules/skparagraph/utils/TestFontCollection.h",
 ]
 
 skparagraph_sources = [
@@ -41,7 +42,8 @@ skparagraph_sources = [
   "$_modules/skparagraph/src/TextWrapper.cpp",
   "$_modules/skparagraph/src/TextWrapper.h",
   "$_modules/skparagraph/src/TypefaceFontProvider.cpp",
-  "$_modules/skparagraph/utils/TestFontCollection.cpp",
+  # Skia4Delphi build workaround
+  #"$_modules/skparagraph/utils/TestFontCollection.cpp",
 ]
 
 skparagraph_utils = [

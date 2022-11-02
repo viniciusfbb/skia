@@ -13,10 +13,9 @@ declare_args() {
   if (is_android) {
     _prefix = "$ndk/toolchains/llvm/prebuilt/$ndk_host/bin"
     if (host_os == "win") {
-      target_ar = "$_prefix/llvm-ar.exe"
-      target_cc = "$_prefix/clang.exe --target=$ndk_target$ndk_api -fno-addrsig"
-      target_cxx =
-          "$_prefix/clang++.exe --target=$ndk_target$ndk_api -fno-addrsig"
+      target_ar = "\"$_prefix/llvm-ar.exe\""
+      target_cc = "\"$_prefix/clang.exe\" --target=$ndk_target$ndk_api -fno-addrsig"
+      target_cxx = "\"$_prefix/clang.exe\" --driver-mode=g++ --target=$ndk_target$ndk_api -fno-addrsig"
     } else {
       target_ar = "$_prefix/llvm-ar"
       target_cc = "$_prefix/$ndk_target$ndk_api-clang"
@@ -29,6 +28,14 @@ declare_args() {
     cflags = "--sysroot=" +
              rebase_path("$fuchsia_toolchain_path/$target_cpu/sysroot")
     link = rebase_path("$fuchsia_toolchain_path/bin/ld.lld")
+  } else if ((is_linux || is_mac || is_ios) && host_os == "win") {
+      if (is_apple) {
+        target_ar = "\"$clang_win/bin/llvm-ar.exe\" --format=darwin"
+      } else {
+        target_ar = "\"$clang_win/bin/llvm-ar.exe\""
+      }
+      target_cc = "\"$clang_win/bin/clang.exe\""
+      target_cxx = "\"$clang_win/bin/clang.exe\" --driver-mode=g++"
   } else {
     target_ar = ar
     target_cc = cc
@@ -42,7 +49,13 @@ declare_args() {
   # large -j to Ninja (e.g. Goma build). Unfortunately this is also one of the
   # slowest steps in a build, so we don't want to limit too much. Use the number
   # of CPUs as a default.
-  dlsymutil_pool_depth = exec_script("num_cpus.py", [], "value")
+  if (host_os == "win") {
+    # Skia4Delphi build workaround
+    dlsymutil_pool_depth = 1
+  } else {
+    dlsymutil_pool_depth = exec_script("num_cpus.py", [], "value")
+  }
+
 
   # Too many linkers running at once causes issues for some builders. Allow
   # such builders to limit the number of concurrent link steps.
@@ -52,7 +65,11 @@ declare_args() {
 
 declare_args() {
   host_link = host_cxx
-  target_link = target_cxx
+  if ((is_linux || is_mac || is_ios) && host_os == "win") {
+    target_link = "$target_cxx -fuse-ld=lld"
+  } else {
+    target_link = target_cxx
+  }
 }
 
 # For 'shell' see https://ninja-build.org/manual.html#ref_rule_command
@@ -91,17 +108,17 @@ toolchain("msvc") {
     env_setup = "$shell set \"PATH=%PATH%;$win_vc\\Tools\\MSVC\\$win_toolchain_version\\bin\\HostX64\\x64\" && "
   }
 
-  cl_m_flag = ""
+  cl_m32_flag = ""
 
   if (clang_win != "") {
-    # clang-cl.exe needs to be told when targeting non-host platforms.
     if (target_cpu == "x86") {
-      cl_m_flag = "-m32"
-    } else if (target_cpu == "x64") {
-      cl_m_flag = "-m64"
+      # cl.exe knows implicitly by the choice of executable that it's targeting
+      # x86, but clang-cl.exe needs to be told when targeting non-host
+      # platforms. (All our builders are x86-64, so x86 is always non-host.)
+      cl_m32_flag = "-m32"
     }
     if (host_os == "win") {
-      cl = "\"$clang_win/bin/clang-cl.exe\""
+      cl = "\"$clang_win/bin/clang.exe\" --driver-mode=cl"
       lib = "\"$clang_win/bin/lld-link.exe\" /lib"
       link = "\"$clang_win/bin/lld-link.exe\""
     } else {
@@ -131,7 +148,7 @@ toolchain("msvc") {
     pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
     # Label names may have spaces so pdbname must be quoted.
-    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m_flag {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     depsformat = "msvc"
     outputs =
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.obj" ]
@@ -143,7 +160,7 @@ toolchain("msvc") {
     pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
     # Label names may have spaces so pdbname must be quoted.
-    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m_flag {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     depsformat = "msvc"
     outputs =
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.obj" ]
@@ -173,10 +190,11 @@ toolchain("msvc") {
   tool("solink") {
     dllname = "{{output_dir}}/{{target_output_name}}{{output_extension}}"
     libname = "${dllname}.lib"
+    mapname = "${dllname}.map"
     pdbname = "${dllname}.pdb"
     rspfile = "${dllname}.rsp"
 
-    command = "$env_setup $link /nologo /IMPLIB:$libname /DLL /OUT:$dllname /PDB:$pdbname @$rspfile"
+    command = "$env_setup $link /nologo /IMPLIB:$libname /DLL /MAP:$mapname /OUT:$dllname /PDB:$pdbname @$rspfile"
     outputs = [
       dllname,
       libname,
@@ -228,7 +246,7 @@ toolchain("msvc") {
 
   tool("copy") {
     cp_py = rebase_path("../cp.py")
-    command = "$shell python3 \"$cp_py\" {{source}} {{output}}"
+    command = "$shell \"$python_path\" \"$cp_py\" {{source}} {{output}}"
     description = "copy {{source}} {{output}}"
   }
 }
@@ -287,18 +305,18 @@ template("gcc_like_toolchain") {
       description = "assemble {{source}}"
     }
 
-    if (is_mac || is_ios) {
+    if ((is_mac || is_ios) && host_os == "mac") {
       not_needed([ "ar" ])  # We use libtool instead.
     }
 
     tool("alink") {
-      if (is_mac || is_ios) {
+      if ((is_mac || is_ios) && host_os == "mac") {
         command = "libtool -static -o {{output}} -no_warning_for_no_symbols {{inputs}}"
       } else {
         rspfile = "{{output}}.rsp"
         rspfile_content = "{{inputs}}"
         rm_py = rebase_path("../rm.py")
-        command = "$shell python3 \"$rm_py\" \"{{output}}\" && $ar rcs {{output}} @$rspfile"
+        command = "$shell $python_path \"$rm_py\" \"{{output}}\" && $ar rcs {{output}} @$rspfile"
       }
 
       outputs =
@@ -314,9 +332,15 @@ template("gcc_like_toolchain") {
     tool("solink") {
       soname = "{{target_output_name}}{{output_extension}}"
 
-      rpath = "-Wl,-soname,$soname"
-      if (is_mac || is_ios) {
-        rpath = "-Wl,-install_name,@rpath/$soname"
+      if (is_win) {
+        rpath = ""
+        map = "-Wl,-Map,{{output}}.map"
+      } else {
+        rpath = "-Wl,-soname,$soname"
+        if (is_mac || is_ios) {
+          rpath = "-Wl,-install_name,@rpath/$soname"
+        }
+        map = ""
       }
 
       rspfile = "{{output}}.rsp"
@@ -335,10 +359,12 @@ template("gcc_like_toolchain") {
         _end_group = ""
       }
 
-      command = "$link -shared {{ldflags}} $_start_group @$rspfile {{frameworks}} {{solibs}} $_end_group {{libs}} $rpath -o {{output}}"
+      command = "$link -shared {{ldflags}} $_start_group @$rspfile {{frameworks}} {{solibs}} $_end_group {{libs}} $rpath $map -o {{output}}"
       outputs = [ "{{root_out_dir}}/$soname" ]
       output_prefix = "lib"
-      if (is_mac || is_ios) {
+      if (is_win) {
+        default_output_extension = ".dll"
+      } else if (is_mac || is_ios) {
         default_output_extension = ".dylib"
       } else {
         default_output_extension = ".so"
@@ -382,13 +408,13 @@ template("gcc_like_toolchain") {
 
     tool("copy") {
       cp_py = rebase_path("../cp.py")
-      command = "python3 \"$cp_py\" {{source}} {{output}}"
+      command = "$python_path \"$cp_py\" {{source}} {{output}}"
       description = "copy {{source}} {{output}}"
     }
 
     tool("copy_bundle_data") {
       cp_py = rebase_path("../cp.py")
-      command = "python3 \"$cp_py\" {{source}} {{output}}"
+      command = "$python_path \"$cp_py\" {{source}} {{output}}"
       description = "copy_bundle_data {{source}} {{output}}"
     }
 

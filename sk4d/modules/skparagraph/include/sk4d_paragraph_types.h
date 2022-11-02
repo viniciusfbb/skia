@@ -20,6 +20,8 @@ typedef struct sk_strutstyle_t           sk_strutstyle_t;
 typedef struct sk_textstyle_t            sk_textstyle_t;
 typedef struct sk_typefacefontprovider_t sk_typefacefontprovider_t;
 
+#define WHITE_SPACE_SK_PARAGRAPH_VISITOR_FLAG (1 << 0)
+
 #define UNDERLINE_SK_TEXT_DECORATION_FLAG                 (1 << 0)
 #define OVERLINE_SK_TEXT_DECORATION_FLAG                  (1 << 1)
 #define LINE_THROUGH_SK_TEXT_DECORATION_FLAG              (1 << 2)
@@ -98,6 +100,17 @@ typedef struct {
 } sk_metrics_t;
 
 typedef struct {
+    const sk_font_t*  font;
+    sk_point_t        origin;
+    float             advance_x;
+    int32_t           count;
+    const uint16_t*   glyphs;
+    const sk_point_t* positions;
+    const uint32_t*   utf8_starts;
+    uint32_t          flags;
+} sk_paragraphvisitorinfo_t;
+
+typedef struct {
     float                     width;
     float                     height;
     sk_placeholderalignment_t alignment;
@@ -120,6 +133,8 @@ typedef struct {
     sk_point_t offset;
     double     blur_radius;
 } sk_textshadow_t;
+
+typedef void (*sk_paragraph_visit_proc) (int32_t line_number, const sk_paragraphvisitorinfo_t* info, void* context);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

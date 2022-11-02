@@ -59,6 +59,11 @@ gr_directcontext_t* gr4d_directcontext_make_metal(const gr_mtl_backendcontext_t*
     return SK4D_ONLY_METAL(ToGrDirectContext(GrDirectContext::MakeMetal(AsGrMtlBackendContext(backend_context), (options) ? AsGrContextOptions(options) : defaultOptions).release()), nullptr);
 }
 
+gr_directcontext_t* gr4d_directcontext_make_vulkan(const gr_vk_backendcontext_t* backend_context, const gr_contextoptions_t* options) {
+    SK4D_ONLY_VULKAN(GrContextOptions defaultOptions;)
+    return SK4D_ONLY_VULKAN(ToGrDirectContext(GrDirectContext::MakeVulkan(AsGrVkBackendContext(backend_context), (options) ? AsGrContextOptions(options) : defaultOptions).release()), nullptr);
+}
+
 void gr4d_directcontext_perform_deferred_cleanup(gr_directcontext_t* self, int64_t milliseconds) {
     SK4D_ONLY_GPU(AsGrDirectContext(self)->performDeferredCleanup(std::chrono::milliseconds(milliseconds));)
 }

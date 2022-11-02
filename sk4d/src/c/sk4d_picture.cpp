@@ -20,7 +20,7 @@ sk_picture_t* sk4d_picture_make_from_stream(sk_stream_t* stream) {
 sk_shader_t* sk4d_picture_make_shader(const sk_picture_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, sk_filtermode_t filter_mode, const sk_matrix_t* local_matrix, const sk_rect_t* tile_rect) {
     SkMatrix m;
     if (local_matrix)
-      m = AsMatrix(local_matrix);
+        m = AsMatrix(local_matrix);
     return ToShader(AsPicture(self)->makeShader(AsTileMode(tile_mode_x), AsTileMode(tile_mode_y), AsFilterMode(filter_mode), (local_matrix) ? &m : nullptr, AsRect(tile_rect)).release());
 }
 

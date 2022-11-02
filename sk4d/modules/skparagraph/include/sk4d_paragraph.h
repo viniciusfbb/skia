@@ -30,6 +30,7 @@ SK4D_API void sk4d_paragraph_get_word_boundary(sk_paragraph_t* self, uint32_t of
 SK4D_API void sk4d_paragraph_layout(sk_paragraph_t* self, float width);
 SK4D_API void sk4d_paragraph_paint(sk_paragraph_t* self, sk_canvas_t* canvas, float x, float y);
 SK4D_API sk_path_t* sk4d_paragraph_to_path(sk_paragraph_t* self);
+SK4D_API void sk4d_paragraph_visit(sk_paragraph_t* self, sk_paragraph_visit_proc proc, void* proc_context);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

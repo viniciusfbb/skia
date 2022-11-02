@@ -25,6 +25,7 @@ SK4D_API void gr4d_directcontext_get_resource_cache_usage(const gr_directcontext
 SK4D_API bool gr4d_directcontext_is_abandoned(gr_directcontext_t* self);
 SK4D_API gr_directcontext_t* gr4d_directcontext_make_gl(const gr_gl_interface_t* gl_interface, const gr_contextoptions_t* options);
 SK4D_API gr_directcontext_t* gr4d_directcontext_make_metal(const gr_mtl_backendcontext_t* backend_context, const gr_contextoptions_t* options);
+SK4D_API gr_directcontext_t* gr4d_directcontext_make_vulkan(const gr_vk_backendcontext_t* backend_context, const gr_contextoptions_t* options);
 SK4D_API void gr4d_directcontext_perform_deferred_cleanup(gr_directcontext_t* self, int64_t milliseconds);
 SK4D_API void gr4d_directcontext_purge_unlocked_resources(gr_directcontext_t* self, bool scratch_resources_only);
 SK4D_API void gr4d_directcontext_purge_unlocked_resources2(gr_directcontext_t* self, size_t bytes_to_purge, bool prefer_scratch_resources);

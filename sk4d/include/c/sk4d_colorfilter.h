@@ -14,6 +14,7 @@
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
 SK4D_API sk_colorfilter_t* sk4d_colorfilter_make_blend(sk_color_t color, sk_blendmode_t mode);
+SK4D_API sk_colorfilter_t* sk4d_colorfilter_make_blend2(const sk_color4f_t* color, sk_colorspace_t* color_space, sk_blendmode_t mode);
 SK4D_API sk_colorfilter_t* sk4d_colorfilter_make_compose(sk_colorfilter_t* outer, sk_colorfilter_t* inner);
 SK4D_API sk_colorfilter_t* sk4d_colorfilter_make_high_contrast(const sk_highcontrastconfig_t* config);
 SK4D_API sk_colorfilter_t* sk4d_colorfilter_make_hsla_matrix(const sk_colormatrix_t* matrix);

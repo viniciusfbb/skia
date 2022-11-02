@@ -27,7 +27,7 @@
 
 #ifndef SK4D_API
     #ifdef SK4D_DLL
-        #ifdef _MSC_VER
+        #ifdef _WIN32
             #if SK4D_IMPLEMENTATION
                 #define SK4D_API __declspec(dllexport)
             #else
@@ -45,10 +45,6 @@
 
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
-typedef struct gr_backendformat_t            gr_backendformat_t;
-typedef struct gr_backendrendertarget_t      gr_backendrendertarget_t;
-typedef struct gr_backendtexture_t           gr_backendtexture_t;
-typedef struct gr_directcontext_t            gr_directcontext_t;
 typedef struct sk_animcodecplayer_t          sk_animcodecplayer_t;
 typedef struct sk_blender_t                  sk_blender_t;
 typedef struct sk_canvas_t                   sk_canvas_t;
@@ -58,15 +54,10 @@ typedef struct sk_colorspace_t               sk_colorspace_t;
 typedef struct sk_colorspaceiccprofile_t     sk_colorspaceiccprofile_t;
 typedef struct sk_data_t                     sk_data_t;
 typedef struct sk_document_t                 sk_document_t;
-typedef struct sk_dynamicmemorywstream_t     sk_dynamicmemorywstream_t;
-typedef struct sk_filestream_t               sk_filestream_t;
-typedef struct sk_filewstream_t              sk_filewstream_t;
 typedef struct sk_font_t                     sk_font_t;
-typedef struct sk_fontmgr_t                  sk_fontmgr_t;
 typedef struct sk_image_t                    sk_image_t;
 typedef struct sk_imagefilter_t              sk_imagefilter_t;
 typedef struct sk_maskfilter_t               sk_maskfilter_t;
-typedef struct sk_memorystream_t             sk_memorystream_t;
 typedef struct sk_opbuilder_t                sk_opbuilder_t;
 typedef struct sk_paint_t                    sk_paint_t;
 typedef struct sk_path_t                     sk_path_t;
@@ -118,16 +109,6 @@ typedef struct sk_wstreamadapter_t           sk_wstreamadapter_t;
 #define CONVERT_TEXT_TO_PATHS_SK_SVG_CANVAS_FLAG           (1 << 0)
 #define NO_PRETTY_XML_SK_SVG_CANVAS_FLAG                   (1 << 1)
 #define RELATIVE_PATH_ENCODING_SK_SVG_CANVAS_FLAG          (1 << 2)
-
-typedef enum {
-    OPEN_GL_GR_BACKENDAPI,
-    METAL_GR_BACKENDAPI = 2,
-} gr_backendapi_t;
-
-typedef enum {
-    TOP_LEFT_GR_SURFACEORIGIN,
-    BOTTOM_LEFT_GR_SURFACEORIGIN,
-} gr_surfaceorigin_t;
 
 typedef enum {
     UNKNOWN_SK_ALPHATYPE,
@@ -210,6 +191,7 @@ typedef enum {
     RG1616_SK_COLORTYPE,
     RGBA16161616_SK_COLORTYPE,
     SRGBA8888_SK_COLORTYPE,
+    R8_SK_COLORTYPE,
 } sk_colortype_t;
 
 typedef enum {
@@ -639,6 +621,7 @@ typedef struct {
 } sk_rotationscalematrix_t;
 
 typedef struct {
+    const int32_t             max_anisotropic;
     const bool                use_cubic;
     const sk_cubicresampler_t cubic;
     const sk_filtermode_t     filter;
@@ -678,18 +661,55 @@ typedef struct {
     void (*dump_string_value)  (void* context, const char dump_name[], const char value_name[], const char value[]);
 } sk_tracememorydumpbaseclass_procs_t;
 
-// GPU
+// Ganesh
+
+typedef struct gr_backendrendertarget_t         gr_backendrendertarget_t;
+typedef struct gr_backendtexture_t              gr_backendtexture_t;
+typedef struct gr_directcontext_t               gr_directcontext_t;
+typedef struct gr_persistentcache_t             gr_persistentcache_t;
+typedef struct gr_persistentcachebaseclass_t    gr_persistentcachebaseclass_t;
+typedef struct gr_shadererrorhandler_t          gr_shadererrorhandler_t;
+typedef struct gr_shadererrorhandlerbaseclass_t gr_shadererrorhandlerbaseclass_t;
+
+typedef enum {
+    OPEN_GL_GR_BACKENDAPI,
+    VULKAN_GR_BACKENDAPI,
+    METAL_GR_BACKENDAPI,
+} gr_backendapi_t;
+
+typedef enum {
+    SKSL_GR_SHADERCACHESTRATEGY,
+    BACKEND_SOURCE_GR_SHADERCACHESTRATEGY,
+    BACKEND_BINARY_GR_SHADERCACHESTRATEGY,
+} gr_shadercachestrategy_t;
+
+typedef enum {
+    TOP_LEFT_GR_SURFACEORIGIN,
+    BOTTOM_LEFT_GR_SURFACEORIGIN,
+} gr_surfaceorigin_t;
 
 typedef struct {
-    int32_t buffer_map_threshold;
-    bool    do_manual_mipmapping;
-    bool    allow_path_mask_caching;
-    size_t  glyph_cache_texture_maximum_bytes;
-    bool    avoid_stencil_buffers;
-    int32_t runtime_program_cache_size;
+    int32_t                  buffer_map_threshold;
+    bool                     do_manual_mipmapping;
+    bool                     allow_path_mask_caching;
+    size_t                   glyph_cache_texture_maximum_bytes;
+    bool                     avoid_stencil_buffers;
+    int32_t                  runtime_program_cache_size;
+    gr_persistentcache_t*    persistent_cache;
+    gr_shadercachestrategy_t shader_cache_strategy;
+    gr_shadererrorhandler_t* shader_error_handler;
 } gr_contextoptions_t;
 
-// GPU - OpenGL
+typedef struct {
+    sk_data_t* (*load)  (void* context, const void* key_data, size_t key_size);
+    void       (*store) (void* context, const void* key_data, size_t key_size, const void* data, size_t size);
+} gr_persistentcachebaseclass_procs_t;
+
+typedef struct {
+    void (*compile_error) (void* context, const char shader[], const char errors[]);
+} gr_shadererrorhandlerbaseclass_procs_t;
+
+// Ganesh - OpenGL
 
 typedef struct gr_gl_interface_t gr_gl_interface_t;
 
@@ -709,7 +729,7 @@ typedef struct {
 
 typedef void* (*gr_gl_get_proc) (void* context, const char name[]);
 
-// GPU - Metal
+// Ganesh - Metal
 
 typedef const void*  gr_mtl_handle_t;
 
@@ -722,6 +742,87 @@ typedef struct {
     gr_mtl_handle_t queue;
     gr_mtl_handle_t binary_archive;
 } gr_mtl_backendcontext_t;
+
+// Ganesh - Vulkan
+
+typedef struct gr_vk_extensions_t              gr_vk_extensions_t;
+typedef struct gr_vk_physicaldevicefeatures_t  gr_vk_physicaldevicefeatures_t;
+typedef struct gr_vk_physicaldevicefeatures2_t gr_vk_physicaldevicefeatures2_t;
+
+#define NONCOHERENT_VK_ALLOC_FLAG      (1 << 0)
+#define MAPPABLE_VK_ALLOC_FLAG         (1 << 1)
+#define LAZILY_ALLOCATED_VK_ALLOC_FLAG (1 << 2)
+
+typedef uint32_t gr_vk_bool32_t;
+typedef int32_t  gr_vk_chromalocation_t;
+typedef void*    gr_vk_device_t;
+typedef uint64_t gr_vk_devicememory_t;
+typedef uint64_t gr_vk_devicesize_t;
+typedef int32_t  gr_vk_filter_t;
+typedef int32_t  gr_vk_format_t;
+typedef uint32_t gr_vk_formatfeatureflags_t;
+typedef uint64_t gr_vk_image_t;
+typedef int32_t  gr_vk_imagelayout_t;
+typedef int32_t  gr_vk_imagetiling_t;
+typedef uint32_t gr_vk_imageusageflags_t;
+typedef void*    gr_vk_instance_t;
+typedef void*    gr_vk_physicaldevice_t;
+typedef void*    gr_vk_queue_t;
+typedef int32_t  gr_vk_samplerycbcrmodelconversion_t;
+typedef int32_t  gr_vk_samplerycbcrrange_t;
+typedef int32_t  gr_vk_sharingmode_t;
+
+typedef void* (*gr_vk_get_proc) (void* context, const char name[], gr_vk_instance_t instance, gr_vk_device_t device);
+
+typedef struct {
+    gr_vk_devicememory_t  device_memory;
+    gr_vk_devicesize_t    offset;
+    gr_vk_devicesize_t    size;
+    uint32_t              flags;
+    intptr_t              memory;
+} gr_vk_alloc_t;
+
+typedef struct {
+    gr_vk_instance_t                       instance;
+    gr_vk_physicaldevice_t                 physical_device;
+    gr_vk_device_t                         device;
+    gr_vk_queue_t                          queue;
+    uint32_t                               graphics_queue_index;
+    uint32_t                               max_version;
+    const gr_vk_extensions_t*              extensions;
+    const gr_vk_physicaldevicefeatures_t*  physical_device_features;
+    const gr_vk_physicaldevicefeatures2_t* physical_device_features2;
+    void*                                  get_context;
+    gr_vk_get_proc                         get_proc;
+    bool                                   protected_context;
+} gr_vk_backendcontext_t;
+
+typedef struct {
+    gr_vk_format_t                      format;
+    uint64_t                            external_format;
+    gr_vk_samplerycbcrmodelconversion_t ycbcr_model;
+    gr_vk_samplerycbcrrange_t           ycbcr_range;
+    gr_vk_chromalocation_t              x_chroma_offset;
+    gr_vk_chromalocation_t              y_chroma_offset;
+    gr_vk_filter_t                      chroma_filter;
+    gr_vk_bool32_t                      force_explicit_reconstruction;
+    gr_vk_formatfeatureflags_t          format_features;
+} gr_vk_ycbcrconversioninfo_t;
+
+typedef struct {
+    gr_vk_image_t               image;
+    gr_vk_alloc_t               alloc;
+    gr_vk_imagetiling_t         image_tiling;
+    gr_vk_imagelayout_t         image_layout;
+    gr_vk_format_t              format;
+    gr_vk_imageusageflags_t     image_usage_flags;
+    uint32_t                    sample_count;
+    uint32_t                    level_count;
+    uint32_t                    current_queue_family;
+    bool                        protected_image;
+    gr_vk_ycbcrconversioninfo_t ycbcr_conversion_info;
+    gr_vk_sharingmode_t         sharing_mode;
+} gr_vk_imageinfo_t;
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

@@ -10,15 +10,19 @@
 #include "src/c/sk4d_mapping.h"
 
 gr_backendrendertarget_t* gr4d_backendrendertarget_create_gl(int32_t width, int32_t height, int32_t sample_count, int32_t stencil_bits, const gr_gl_framebufferinfo_t* framebuffer_info) {
-    return ToGrBackendRenderTarget(SK4D_ONLY_GL(new GrBackendRenderTarget(width, height, sample_count, stencil_bits, AsGrGLFramebufferInfo(*framebuffer_info)), new GrBackendRenderTarget()));
+    return SK4D_ONLY_GL(ToGrBackendRenderTarget(new GrBackendRenderTarget(width, height, sample_count, stencil_bits, AsGrGLFramebufferInfo(*framebuffer_info))), nullptr);
 }
 
 gr_backendrendertarget_t* gr4d_backendrendertarget_create_mtl(int32_t width, int32_t height, const gr_mtl_textureinfo_t* texture_info) {
-    return ToGrBackendRenderTarget(SK4D_ONLY_METAL(new GrBackendRenderTarget(width, height, AsGrMtlTextureInfo(texture_info)), new GrBackendRenderTarget()));
+    return SK4D_ONLY_METAL(ToGrBackendRenderTarget(new GrBackendRenderTarget(width, height, AsGrMtlTextureInfo(texture_info))), nullptr);
+}
+
+gr_backendrendertarget_t* gr4d_backendrendertarget_create_vk(int32_t width, int32_t height, const gr_vk_imageinfo_t* image_info) {
+    return SK4D_ONLY_VULKAN(ToGrBackendRenderTarget(new GrBackendRenderTarget(width, height, AsGrVkImageInfo(image_info))), nullptr);
 }
 
 void gr4d_backendrendertarget_destroy(gr_backendrendertarget_t* self) {
-    delete AsGrBackendRenderTarget(self);
+    SK4D_ONLY_GPU(delete AsGrBackendRenderTarget(self);)
 }
 
 gr_backendapi_t gr4d_backendrendertarget_get_backend_api(const gr_backendrendertarget_t* self) {
@@ -46,15 +50,19 @@ bool gr4d_backendrendertarget_is_valid(const gr_backendrendertarget_t* self) {
 }
 
 gr_backendtexture_t* gr4d_backendtexture_create_gl(int32_t width, int32_t height, bool is_mipmapped, const gr_gl_textureinfo_t* texture_info) {
-    return ToGrBackendTexture(SK4D_ONLY_GL(new GrBackendTexture(width, height, AsGrMipmapped(is_mipmapped), AsGrGLTextureInfo(*texture_info)), new GrBackendTexture()));
+    return SK4D_ONLY_GL(ToGrBackendTexture(new GrBackendTexture(width, height, AsGrMipmapped(is_mipmapped), AsGrGLTextureInfo(*texture_info))), nullptr);
 }
 
 gr_backendtexture_t* gr4d_backendtexture_create_mtl(int32_t width, int32_t height, bool is_mipmapped, const gr_mtl_textureinfo_t* texture_info) {
-    return ToGrBackendTexture(SK4D_ONLY_METAL(new GrBackendTexture(width, height, AsGrMipmapped(is_mipmapped), AsGrMtlTextureInfo(texture_info)), new GrBackendTexture()));
+    return SK4D_ONLY_METAL(ToGrBackendTexture(new GrBackendTexture(width, height, AsGrMipmapped(is_mipmapped), AsGrMtlTextureInfo(texture_info))), nullptr);
+}
+
+gr_backendtexture_t* gr4d_backendtexture_create_vk(int32_t width, int32_t height, const gr_vk_imageinfo_t* image_info) {
+    return SK4D_ONLY_VULKAN(ToGrBackendTexture(new GrBackendTexture(width, height, AsGrVkImageInfo(image_info))), nullptr);
 }
 
 void gr4d_backendtexture_destroy(gr_backendtexture_t* self) {
-    delete AsGrBackendTexture(self);
+    SK4D_ONLY_GPU(delete AsGrBackendTexture(self);)
 }
 
 gr_backendapi_t gr4d_backendtexture_get_backend_api(const gr_backendtexture_t* self) {

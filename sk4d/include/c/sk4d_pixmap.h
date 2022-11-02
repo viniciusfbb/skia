@@ -21,6 +21,7 @@ SK4D_API bool sk4d_pixmap_extract_subset(const sk_pixmap_t* self, sk_pixmap_t* d
 SK4D_API float sk4d_pixmap_get_alpha(const sk_pixmap_t* self, int32_t x, int32_t y);
 SK4D_API sk_alphatype_t sk4d_pixmap_get_alpha_type(const sk_pixmap_t* self);
 SK4D_API sk_color_t sk4d_pixmap_get_color(const sk_pixmap_t* self, int32_t x, int32_t y);
+SK4D_API void sk4d_pixmap_get_colorf(const sk_pixmap_t* self, int32_t x, int32_t y, /*out*/ sk_color4f_t* result);
 SK4D_API sk_colorspace_t* sk4d_pixmap_get_color_space(const sk_pixmap_t* self);
 SK4D_API sk_colortype_t sk4d_pixmap_get_color_type(const sk_pixmap_t* self);
 SK4D_API int32_t sk4d_pixmap_get_height(const sk_pixmap_t* self);

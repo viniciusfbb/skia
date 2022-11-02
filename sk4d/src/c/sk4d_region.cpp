@@ -61,7 +61,7 @@ bool sk4d_region_is_empty(const sk_region_t* self) {
 }
 
 bool sk4d_region_is_equal(const sk_region_t* self, const sk_region_t* region) {
-    return AsRegion(*region) == AsRegion(*region);
+    return AsRegion(*self) == AsRegion(*region);
 }
 
 bool sk4d_region_is_rect(const sk_region_t* self) {
@@ -144,10 +144,6 @@ bool sk4d_regioniterator_move_next(sk_regioniterator_t* self) {
         return false;
     AsRegionIterator(self)->next();
     return true;
-}
-
-void sk4d_regioniterator_reset(sk_regioniterator_t* self) {
-    AsRegionIterator(self)->rewind();
 }
 
 sk_regionspanerator_t* sk4d_regionspanerator_create(const sk_region_t* region, int32_t y, int32_t left, int32_t right) {

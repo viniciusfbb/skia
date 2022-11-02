@@ -168,6 +168,10 @@ void sk4d_canvas_draw_vertices(sk_canvas_t* self, const sk_vertices_t* vertices,
     AsCanvas(self)->drawVertices(AsVertices(vertices), AsBlendMode(blend_mode), AsPaint(*paint));
 }
 
+void sk4d_canvas_get_base_props(const sk_canvas_t* self, sk_surfaceprops_t* result) {
+    *result = ToSurfaceProps(AsCanvas(self)->getBaseProps());
+}
+
 void sk4d_canvas_get_device_clip_bounds(const sk_canvas_t* self, sk_irect_t* result) {
     *result = ToIRect(AsCanvas(self)->getDeviceClipBounds());
 }
@@ -184,8 +188,16 @@ void sk4d_canvas_get_local_to_device_as_3x3(const sk_canvas_t* self, sk_matrix_t
     *result = ToMatrix(AsCanvas(self)->getLocalToDevice().asM33());
 }
 
+void sk4d_canvas_get_top_props(const sk_canvas_t* self, sk_surfaceprops_t* result) {
+    *result = ToSurfaceProps(AsCanvas(self)->getTopProps());
+}
+
 int32_t sk4d_canvas_get_save_count(const sk_canvas_t* self) {
     return AsCanvas(self)->getSaveCount();
+}
+
+sk_surface_t* sk4d_canvas_make_surface(sk_canvas_t* self, const sk_imageinfo_t* image_info, const sk_surfaceprops_t* surface_props) {
+    return ToSurface(AsCanvas(self)->makeSurface(AsImageInfo(image_info), AsSurfaceProps(surface_props)).release());
 }
 
 bool sk4d_canvas_quick_reject(const sk_canvas_t* self, const sk_rect_t* rect) {

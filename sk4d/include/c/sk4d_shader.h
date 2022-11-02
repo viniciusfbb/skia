@@ -29,7 +29,6 @@ SK4D_API sk_shader_t* sk4d_shader_make_perlin_noise_turbulence(float base_freque
 SK4D_API sk_shader_t* sk4d_shader_make_with_color_filter(const sk_shader_t* self, sk_colorfilter_t* color_filter);
 SK4D_API sk_shader_t* sk4d_shader_make_with_local_matrix(const sk_shader_t* self, const sk_matrix_t* local_matrix);
 
-
 SK4D_C_PLUS_PLUS_END_GUARD
 
 #endif

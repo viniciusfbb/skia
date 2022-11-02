@@ -31,10 +31,6 @@ void sk4d_surface_get_props(const sk_surface_t* self, sk_surfaceprops_t* result)
     *result = ToSurfaceProps(AsSurface(self)->props());
 }
 
-sk_surface_t* sk4d_surface_make_from_ca_metal_layer(gr_directcontext_t* context, gr_mtl_handle_t layer, gr_surfaceorigin_t origin, int32_t sample_count, sk_colortype_t color_type, sk_colorspace_t* color_space, const sk_surfaceprops_t* props, gr_mtl_handle_t* drawable) {
-    return SK4D_ONLY_METAL(ToSurface(SkSurface::MakeFromCAMetalLayer(AsGrDirectContext(context), layer, AsGrSurfaceOrigin(origin), sample_count, AsColorType(color_type), sk_ref_sp(AsColorSpace(color_space)), AsSurfaceProps(props), drawable).release()), nullptr);
-}
-
 sk_surface_t* sk4d_surface_make_from_mtk_view(gr_directcontext_t* context, gr_mtl_handle_t view, gr_surfaceorigin_t origin, int32_t sample_count, sk_colortype_t color_type, sk_colorspace_t* color_space, const sk_surfaceprops_t* props) {
     return SK4D_ONLY_METAL(ToSurface(SkSurface::MakeFromMTKView(AsGrDirectContext(context), view, AsGrSurfaceOrigin(origin), sample_count, AsColorType(color_type), sk_ref_sp(AsColorSpace(color_space)), AsSurfaceProps(props)).release()), nullptr);
 }

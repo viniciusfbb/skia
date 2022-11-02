@@ -18,7 +18,7 @@
 #include <climits>
 
 // disable warning : local variable used without having been initialized
-#if defined _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #pragma warning ( push )
 #pragma warning ( disable : 4701 )
 #endif
@@ -121,7 +121,7 @@ void SkDraw::drawGlyphRunList(SkCanvas* canvas,
                                       fMatrixProvider->localToDevice());
 }
 
-#if defined _WIN32
+#if defined(_WIN32) && !defined(__MINGW32__)
 #pragma warning ( pop )
 #endif
 

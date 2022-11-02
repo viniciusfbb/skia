@@ -170,7 +170,7 @@ static_assert( 1 == SkCLZ_portable(1 << 30));
 static_assert( 1 == SkCLZ_portable((1 << 30) | (1 << 24) | 1));
 static_assert( 0 == SkCLZ_portable(~0U));
 
-#if defined(SK_BUILD_FOR_WIN)
+#if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
     #include <intrin.h>
 
     static inline int SkCLZ(uint32_t mask) {
@@ -208,7 +208,7 @@ static_assert(30 == SkCTZ_portable(1 << 30));
 static_assert( 2 == SkCTZ_portable((1 << 30) | (1 << 24) | (1 << 2)));
 static_assert( 0 == SkCTZ_portable(~0U));
 
-#if defined(SK_BUILD_FOR_WIN)
+#if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
     #include <intrin.h>
 
     static inline int SkCTZ(uint32_t mask) {

@@ -97,7 +97,7 @@ void sk4d_paragraph_paint(sk_paragraph_t* self, sk_canvas_t* canvas, float x, fl
 
 sk_path_t* sk4d_paragraph_to_path(sk_paragraph_t* self) {
     auto r = new SkPath();
-    AsParagraph(self)->visit([&](int, const skia::textlayout::Paragraph::VisitorInfo* info) {
+    AsParagraph(self)->visit([&](int lineNumber, const skia::textlayout::Paragraph::VisitorInfo* info) {
         if (!info)
             return;
 
@@ -118,4 +118,10 @@ sk_path_t* sk4d_paragraph_to_path(sk_paragraph_t* self) {
         }, &rec);
     });
     return ToPath(r);
+}
+
+void sk4d_paragraph_visit(sk_paragraph_t* self, sk_paragraph_visit_proc proc, void* proc_context) {
+    AsParagraph(self)->visit([&](int lineNumber, const skia::textlayout::Paragraph::VisitorInfo* info) {
+        proc(lineNumber, ToParagraphVisitorInfo(info), proc_context);
+    });
 }

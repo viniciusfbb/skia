@@ -7,8 +7,16 @@ import("skcms.gni")
 
 static_library("skcms") {
   cflags = []
-  if (!is_win || is_clang) {
-    cflags += [ "-std=c11" ]
+
+  # Clang CL driver does not use the "-std=c11" flag at the same time as it accepts the "/std:c11",
+  # although the MSVC CL compiler does not accept it with "/std:c++17", so for reasons of
+  # compatibility we will keep it that way, but in the future it requires a research on the real need.
+  if (is_clang && !win_clang) {
+    if (is_win) {
+      cflags += [ "/std:c11" ]
+    } else {
+      cflags += [ "-std=c11" ]
+    }
   }
 
   public = skcms_public_headers

@@ -3,7 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-is_skia_standalone = true
+# Avoid adding tools and new third-parties in the development build
+is_skia_standalone = false
 
 # It's best to keep the names and defaults of is_foo flags consistent with Chrome.
 
@@ -15,8 +16,8 @@ declare_args() {
   is_component_build = false
   ndk = ""
 
-  # Android 5.0, Lollipop
-  ndk_api = 21
+  # Android 7.0, Nougat
+  ndk_api = 24
 
   sanitize = ""
 
@@ -24,22 +25,24 @@ declare_args() {
   cc = "cc"
   cxx = "c++"
 
-  win_sdk = "C:/Program Files (x86)/Windows Kits/10"
+  win_sdk = ""
   win_sdk_version = ""
 
   win_vc = ""
   win_toolchain_version = ""
 
+  # This flag is to tell gen that we will use llvm-mingw
+  win_clang = false
+
   clang_win = ""
   clang_win_version = ""
 
-  ios_min_target = ""
+  ios_min_target = "11.0"
   ios_use_simulator =
       target_os == "ios" && (target_cpu == "x86" || target_cpu == "x64")
 }
 declare_args() {
   sk4d_enable_assertions = !is_official_build
-
   is_debug = !is_official_build
 }
 
@@ -90,8 +93,8 @@ if (current_cpu == "") {
 }
 
 is_clang = is_android || is_ios || is_mac || is_fuchsia || is_wasm ||
-           (cc == "clang" && cxx == "clang++") || clang_win != ""
-if (!is_clang && !is_win) {
+           (cc == "clang" && cxx == "clang++") || clang_win != "" || win_clang
+if (!is_clang && current_os != "win") {
   is_clang = exec_script("//gn/is_clang.py",
                          [
                            cc,
@@ -128,19 +131,15 @@ if (is_android) {
   }
 }
 
-if (target_os == "win") {
+if (target_os == "win" && !win_clang) {
   # By default we look for 2017 (Enterprise, Pro, and Community), then 2015. If MSVC is installed in a
   # non-default location, you can set win_vc to inform us where it is.
 
-  if (win_vc == "") {
+  if (win_vc == "" && clang_win == "") {
     win_vc = exec_script("//gn/find_msvc.py", [], "trim string")
   }
-  assert(win_vc != "")  # Could not find VC installation. Set win_vc to your VC
-                        # directory.
-}
 
-if (target_os == "win") {
-  if (win_toolchain_version == "") {
+  if (win_vc != "" && win_toolchain_version == "") {
     win_toolchain_version = exec_script("//gn/highest_version_dir.py",
                                         [
                                           "$win_vc/Tools/MSVC",
@@ -148,7 +147,7 @@ if (target_os == "win") {
                                         ],
                                         "trim string")
   }
-  if (win_sdk_version == "") {
+  if (win_sdk != "" && win_sdk_version == "") {
     win_sdk_version = exec_script("//gn/highest_version_dir.py",
                                   [
                                     "$win_sdk/Include",
@@ -156,14 +155,15 @@ if (target_os == "win") {
                                   ],
                                   "trim string")
   }
-  if (clang_win != "" && clang_win_version == "") {
-    clang_win_version = exec_script("//gn/highest_version_dir.py",
-                                    [
-                                      "$clang_win/lib/clang",
-                                      "[0-9]+\.[0-9]+\.[0-9]+",
-                                    ],
-                                    "trim string")
-  }
+}
+
+if (host_os == "win" && clang_win != "" && clang_win_version == "") {
+  clang_win_version = exec_script("//gn/highest_version_dir.py",
+                                  [
+                                    "$clang_win/lib/clang",
+                                    "[0-9]+\.[0-9]+\.[0-9]+",
+                                  ],
+                                  "trim string")
 }
 
 # A component is either a static or a shared library.
@@ -244,10 +244,14 @@ if (!is_official_build) {
       [ "//gn/skia:warnings_for_public_headers" ]
 }
 
-if (is_win) {
-  # Windows tool chain
-  set_default_toolchain("//gn/toolchain:msvc")
-  default_toolchain_name = "msvc"
+if (host_os == "win") {
+  if (is_win && !win_clang) {
+    set_default_toolchain("//gn/toolchain:msvc")
+    default_toolchain_name = "msvc"
+  } else {
+    set_default_toolchain("//gn/toolchain:gcc_like")
+    default_toolchain_name = "gcc_like"
+  }
   host_toolchain = "msvc"
 } else if (is_wasm) {
   set_default_toolchain("//gn/toolchain:wasm")

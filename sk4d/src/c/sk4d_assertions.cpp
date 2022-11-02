@@ -60,16 +60,22 @@
 #include "include/effects/SkImageFilters.h"
 #include "include/effects/SkRuntimeEffect.h"
 #include "include/effects/SkTrimPathEffect.h"
-#include "include/gpu/GrTypes.h"
 #include "include/pathops/SkPathOps.h"
 #include "include/svg/SkSVGCanvas.h"
-#include "include/third_party/skcms/skcms.h"
+#include "modules/skcms/skcms.h"
 
 #if SK_SUPPORT_GPU
+    #include "include/gpu/GrContextOptions.h"
     #include "include/gpu/GrDirectContext.h"  
+    #include "include/gpu/GrTypes.h"
+
     #ifdef SK_GL
         #include "include/gpu/gl/GrGLInterface.h"
 	    #include "include/gpu/gl/GrGLTypes.h"
+	#endif
+
+	#ifdef SK_VULKAN
+        #include "include/gpu/vk/GrVkTypes.h"
 	#endif
 #endif
 
@@ -98,6 +104,12 @@ static_assert(static_cast<int>(SkSVGCanvas::kConvertTextToPaths_Flag)   == CONVE
 static_assert(static_cast<int>(SkSVGCanvas::kNoPrettyXML_Flag)          == NO_PRETTY_XML_SK_SVG_CANVAS_FLAG,          "");
 static_assert(static_cast<int>(SkSVGCanvas::kRelativePathEncoding_Flag) == RELATIVE_PATH_ENCODING_SK_SVG_CANVAS_FLAG, "");
 
+#ifdef SK_VULKAN
+    static_assert(static_cast<int>(GrVkAlloc::kNoncoherent_Flag)     == NONCOHERENT_VK_ALLOC_FLAG,      "");
+    static_assert(static_cast<int>(GrVkAlloc::kMappable_Flag)        == MAPPABLE_VK_ALLOC_FLAG,         "");
+    static_assert(static_cast<int>(GrVkAlloc::kLazilyAllocated_Flag) == LAZILY_ALLOCATED_VK_ALLOC_FLAG, "");
+#endif
+
 
 /*
  * ASSERTIONS OF STRUCTURES
@@ -107,6 +119,9 @@ static_assert(static_cast<int>(SkSVGCanvas::kRelativePathEncoding_Flag) == RELAT
  *   - GrContextOptions
  *   - GrMtlBackendContext
  *   - GrMtlTextureInfo
+ *   - GrVkAlloc
+ *   - GrVkBackendContext
+ *   - GrVkImageInfo
  *   - ImageInfo
  *   - Matrix
  *   - Matrix44
@@ -141,26 +156,19 @@ static_assert(sizeof(SkWStreamAdapter::Procs)           == sizeof(sk_wstreamadap
 
 #if SK_SUPPORT_GPU
     #ifdef SK_GL
-		static_assert(sizeof(GrGLFramebufferInfo) == sizeof(gr_gl_framebufferinfo_t), "");
-		static_assert(sizeof(GrGLTextureInfo)     == sizeof(gr_gl_textureinfo_t),     "");
-	#endif
+        static_assert(sizeof(GrGLFramebufferInfo) == sizeof(gr_gl_framebufferinfo_t), "");
+        static_assert(sizeof(GrGLTextureInfo)     == sizeof(gr_gl_textureinfo_t),     "");
+    #endif
+
+	#ifdef SK_VULKAN
+        static_assert(sizeof(GrVkYcbcrConversionInfo) == sizeof(gr_vk_ycbcrconversioninfo_t), "");
+    #endif
 #endif
 
 
 /*
  * ASSERTIONS OF ENUMERATIONS
  */
-
-// GrBackendApi
-static_assert(static_cast<int>(GrBackendApi::kOpenGL) == static_cast<int>(OPEN_GL_GR_BACKENDAPI), "");
-static_assert(static_cast<int>(GrBackendApi::kMetal)  == static_cast<int>(METAL_GR_BACKENDAPI),   "");
-
-// GrMipmapped
-static_assert(std::is_same<std::underlying_type_t<GrMipmapped>, bool>::value, "");
-
-// GrSurfaceOrigin
-static_assert(static_cast<int>(kTopLeft_GrSurfaceOrigin)    == static_cast<int>(TOP_LEFT_GR_SURFACEORIGIN),    "");
-static_assert(static_cast<int>(kBottomLeft_GrSurfaceOrigin) == static_cast<int>(BOTTOM_LEFT_GR_SURFACEORIGIN), "");
 
 // SkAlphaType
 static_assert(static_cast<int>(kUnknown_SkAlphaType)  == static_cast<int>(UNKNOWN_SK_ALPHATYPE),  "");
@@ -216,7 +224,7 @@ static_assert(std::is_same<std::underlying_type_t<SkBudgeted>, bool>::value, "")
 // SkCanvas::PointMode
 static_assert(static_cast<int>(SkCanvas::kPoints_PointMode)  == static_cast<int>(POINTS_SK_DRAWPOINTSMODE),  "");
 static_assert(static_cast<int>(SkCanvas::kLines_PointMode)   == static_cast<int>(LINES_SK_DRAWPOINTSMODE),   "");
-static_assert(static_cast<int>(SkCanvas::kPolygon_PointMode) == static_cast<int>(POLYGON_DRAWPOINTSMODE), "");
+static_assert(static_cast<int>(SkCanvas::kPolygon_PointMode) == static_cast<int>(POLYGON_DRAWPOINTSMODE),    "");
 
 // SkCanvas::SrcRectConstraint
 static_assert(static_cast<int>(SkCanvas::kStrict_SrcRectConstraint) == static_cast<int>(CLOSE_SK_SRCRECTCONSTRAINT), "");
@@ -256,7 +264,8 @@ static_assert(static_cast<int>(kA16_unorm_SkColorType)          == static_cast<i
 static_assert(static_cast<int>(kR16G16_unorm_SkColorType)       == static_cast<int>(RG1616_SK_COLORTYPE),         "");
 static_assert(static_cast<int>(kR16G16B16A16_unorm_SkColorType) == static_cast<int>(RGBA16161616_SK_COLORTYPE),   "");
 static_assert(static_cast<int>(kSRGBA_8888_SkColorType)         == static_cast<int>(SRGBA8888_SK_COLORTYPE),      "");
-static_assert(static_cast<int>(kLastEnum_SkColorType)           == static_cast<int>(kSRGBA_8888_SkColorType),     "");
+static_assert(static_cast<int>(kR8_unorm_SkColorType)           == static_cast<int>(R8_SK_COLORTYPE),             "");
+static_assert(static_cast<int>(kLastEnum_SkColorType)           == static_cast<int>(kR8_unorm_SkColorType),       "");
 
 // SkEncodedImageFormat
 static_assert(static_cast<int>(SkEncodedImageFormat::kBMP)  == static_cast<int>(BMP_SK_ENCODEDIMAGEFORMAT),  "");
@@ -431,6 +440,27 @@ static_assert(static_cast<int>(SkVertices::kTriangleStrip_VertexMode) == static_
 static_assert(static_cast<int>(SkVertices::kTriangleFan_VertexMode)   == static_cast<int>(TRIANGLE_FAN_SK_VERTEXMODE),          "");
 static_assert(static_cast<int>(SkVertices::kLast_VertexMode)          == static_cast<int>(SkVertices::kTriangleFan_VertexMode), "");
 
+#if SK_SUPPORT_GPU
+    // GrBackendApi
+    static_assert(static_cast<int>(GrBackendApi::kOpenGL) == static_cast<int>(OPEN_GL_GR_BACKENDAPI), "");
+    static_assert(static_cast<int>(GrBackendApi::kVulkan) == static_cast<int>(VULKAN_GR_BACKENDAPI),  "");
+    static_assert(static_cast<int>(GrBackendApi::kMetal)  == static_cast<int>(METAL_GR_BACKENDAPI),   "");
+
+    // GrMipmapped
+    static_assert(std::is_same<std::underlying_type_t<GrMipmapped>, bool>::value, "");
+
+    // GrProtected
+    static_assert(std::is_same<std::underlying_type_t<GrProtected>, bool>::value, "");
+
+    // GrContextOption::ShaderCacheStrategy
+    static_assert(static_cast<int>(GrContextOptions::ShaderCacheStrategy::kSkSL)          == static_cast<int>(SKSL_GR_SHADERCACHESTRATEGY),           "");
+    static_assert(static_cast<int>(GrContextOptions::ShaderCacheStrategy::kBackendSource) == static_cast<int>(BACKEND_SOURCE_GR_SHADERCACHESTRATEGY), "");
+    static_assert(static_cast<int>(GrContextOptions::ShaderCacheStrategy::kBackendBinary) == static_cast<int>(BACKEND_BINARY_GR_SHADERCACHESTRATEGY), "");
+
+    // GrSurfaceOrigin
+    static_assert(static_cast<int>(kTopLeft_GrSurfaceOrigin)    == static_cast<int>(TOP_LEFT_GR_SURFACEORIGIN),    "");
+    static_assert(static_cast<int>(kBottomLeft_GrSurfaceOrigin) == static_cast<int>(BOTTOM_LEFT_GR_SURFACEORIGIN), "");
+#endif
 
 /*
  * ASSERTIONS OF REFERENCED OBJECTS
@@ -451,6 +481,7 @@ static_assert(std::is_base_of<SkRefCnt, SkTypeface>::value,      "");
 
 #if SK_SUPPORT_GPU
     static_assert(std::is_base_of<SkRefCnt, GrDirectContext>::value, "");
+
     #ifdef SK_GL
         static_assert(std::is_base_of<SkRefCnt, GrGLInterface>::value, "");
 	#endif

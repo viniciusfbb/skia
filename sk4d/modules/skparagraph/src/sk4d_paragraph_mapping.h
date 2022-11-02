@@ -20,6 +20,7 @@
 #include "modules/skparagraph/include/TypefaceFontProvider.h"
 
 SK4D_DEF_CLASS_MAP(skia::textlayout::Paragraph, sk_paragraph_t, Paragraph)
+SK4D_DEF_CLASS_MAP(skia::textlayout::Paragraph::VisitorInfo, sk_paragraphvisitorinfo_t, ParagraphVisitorInfo)
 SK4D_DEF_CLASS_MAP(skia::textlayout::ParagraphBuilder, sk_paragraphbuilder_t, ParagraphBuilder)
 SK4D_DEF_CLASS_MAP(skia::textlayout::ParagraphStyle, sk_paragraphstyle_t, ParagraphStyle)
 SK4D_DEF_CLASS_MAP(skia::textlayout::PlaceholderStyle, sk_placeholderstyle_t, PlaceholderStyle)

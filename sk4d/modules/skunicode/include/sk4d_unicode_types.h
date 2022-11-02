@@ -13,7 +13,8 @@
 
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
-typedef struct sk_unicode_t sk_unicode_t;
+typedef struct sk_unicode_t              sk_unicode_t;
+typedef struct sk_unicodebreakiterator_t sk_unicodebreakiterator_t;
 
 typedef enum {
   WORDS_SK_BREAKTYPE,
@@ -25,6 +26,11 @@ typedef enum {
     LEFT_TO_RIGHT_SK_DIRECTION,
     RIGHT_TO_LEFT_SK_DIRECTION,
 } sk_direction_t;
+
+typedef struct {
+    int32_t position;
+    int32_t status;
+} sk_unicodebreakiteratorelem_t;
 
 typedef void (*sk_unicode_bidi_region_proc) (int32_t start, int32_t end, uint8_t level, void* context);
 typedef void (*sk_unicode_break_proc)       (int32_t position, int32_t status, void* context);

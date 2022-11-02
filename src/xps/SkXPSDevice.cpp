@@ -318,7 +318,11 @@ bool SkXPSDevice::endSheet() {
     return true;
 }
 
+#if defined(__MINGW32__)
+HRESULT SkXPSDevice::Utils::subset_typeface(const SkXPSDevice::TypefaceUse& current) {
+#else
 static HRESULT subset_typeface(const SkXPSDevice::TypefaceUse& current) {
+#endif
     //The CreateFontPackage API is only supported on desktop, not in UWP
     #if defined(SK_WINUWP)
     return E_NOTIMPL;
@@ -422,7 +426,11 @@ bool SkXPSDevice::endPortfolio() {
     //Subset fonts
     for (const TypefaceUse& current : *this->fTopTypefaces) {
         //Ignore return for now, if it didn't subset, let it be.
+#if defined(__MINGW32__)
+        Utils::subset_typeface(current);
+#else
         subset_typeface(current);
+#endif
     }
 
     if (this->fPackageWriter) {

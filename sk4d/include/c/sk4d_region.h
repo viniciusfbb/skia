@@ -45,7 +45,6 @@ SK4D_API sk_regioniterator_t* sk4d_regioniterator_create(const sk_region_t* regi
 SK4D_API void sk4d_regioniterator_destroy(sk_regioniterator_t* self);
 SK4D_API void sk4d_regioniterator_get_current(const sk_regioniterator_t* self, /*out*/ sk_irect_t* result);
 SK4D_API bool sk4d_regioniterator_move_next(sk_regioniterator_t* self);
-SK4D_API void sk4d_regioniterator_reset(sk_regioniterator_t* self);
 SK4D_API sk_regionspanerator_t* sk4d_regionspanerator_create(const sk_region_t* region, int32_t y, int32_t left, int32_t right);
 SK4D_API void sk4d_regionspanerator_destroy(sk_regionspanerator_t* self);
 SK4D_API bool sk4d_regionspanerator_next(sk_regionspanerator_t* self, /*out*/ sk_ipoint_t* elem);

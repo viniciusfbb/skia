@@ -46,7 +46,7 @@ void sk_abort_no_print() {
     // do not display a system dialog before aborting the process
     _set_abort_behavior(0, _WRITE_ABORT_MSG);
 #endif
-#if defined(SK_DEBUG) && defined(SK_BUILD_FOR_WIN)
+#if defined(SK_DEBUG) && defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
     __fastfail(FAST_FAIL_FATAL_APP_EXIT);
 #elif defined(__clang__)
     __builtin_trap();
