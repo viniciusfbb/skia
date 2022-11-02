@@ -204,7 +204,11 @@ const char* SkParse::FindScalar(const char str[], SkScalar* value) {
     str = skip_ws(str);
 
     char* stop;
+#ifdef SK4D_WORKAROUNDS
+    float v = (float)sk4d_strtod(str, &stop);
+#else
     float v = (float)strtod(str, &stop);
+#endif
     if (str == stop) {
         return nullptr;
     }

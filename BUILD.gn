@@ -1490,6 +1490,14 @@ skia_component("skia") {
   if (skia_include_multiframe_procs) {
     sources += [ "tools/SkSharingProc.cpp" ]
   }
+
+  if (sk4d_workarounds) {
+    sources += [
+      "sk4d/miscellaneous/sk4d_dtoa.h",
+      "sk4d/miscellaneous/sk4d_dtoa.cpp",
+    ]
+    defines += [ "SK4D_WORKAROUNDS" ]
+  }
 }
 
 # DebugCanvas used in experimental/wasm-skp-debugger
