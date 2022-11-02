@@ -18,11 +18,6 @@
 
 #include <cstdio>
 
-#ifdef SK4D_WORKAROUNDS
-    #include <locale>
-    #include <sstream>
-#endif
-
 static inline bool is_between(int c, int min, int max) {
     return (unsigned)(c - min) <= (unsigned)(max - min);
 }
@@ -238,22 +233,14 @@ bool SkParsePath::FromSVGString(const char data[], SkPath* result) {
 ///////////////////////////////////////////////////////////////////////////////
 
 static void write_scalar(SkWStream* stream, SkScalar value) {
-#ifdef SK4D_WORKAROUNDS
-    std::stringstream buffer;
-    buffer.imbue(std::locale::classic());
-    buffer.precision(17);
-    buffer << value;
-    stream->writeText(buffer.str().c_str());
-#else
     char buffer[64];
-    #ifdef SK_BUILD_FOR_WIN
+#ifdef SK_BUILD_FOR_WIN
     int len = _snprintf(buffer, sizeof(buffer), "%g", value);
-    #else
+#else
     int len = snprintf(buffer, sizeof(buffer), "%g", value);
-    #endif
+#endif
     char* stop = buffer + len;
     stream->write(buffer, stop - buffer);
-#endif
 }
 
 void SkParsePath::ToSVGString(const SkPath& path, SkString* str, PathEncoding encoding) {
