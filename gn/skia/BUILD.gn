@@ -417,7 +417,7 @@ config("recover_pointer_overflow") {
 
 config("no_exceptions") {
   # Exceptions are disabled by default on Windows.  (Use /EHsc to enable them.)
-  if (!is_win) {
+  if (!is_win || win_clang) {
     cflags_cc = [ "-fno-exceptions" ]
     cflags_objcc = cflags_cc
   }
