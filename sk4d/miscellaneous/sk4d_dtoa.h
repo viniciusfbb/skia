@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 1991-2022 Lucent Technologies.
- * Copyright (c) 2021-2022 Skia4Delphi Project.
+ * Copyright (c) 1991-2023 Lucent Technologies.
+ * Copyright (c) 2021-2023 Skia4Delphi Project.
  *
  * Use of this source code is governed by a BSD-style license that can be
  * found in the LICENSE file.
