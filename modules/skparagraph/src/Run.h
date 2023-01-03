@@ -35,7 +35,11 @@ const size_t EMPTY_RUN = EMPTY_INDEX;
 typedef size_t ClusterIndex;
 typedef SkRange<size_t> ClusterRange;
 const size_t EMPTY_CLUSTER = EMPTY_INDEX;
+#if defined(__MINGW32__)
+#define EMPTY_CLUSTERS EMPTY_RANGE
+#else
 const SkRange<size_t> EMPTY_CLUSTERS = EMPTY_RANGE;
+#endif
 
 typedef size_t GraphemeIndex;
 typedef SkRange<GraphemeIndex> GraphemeRange;

@@ -5,6 +5,10 @@
 * found in the LICENSE file.
 */
 
+#ifdef __MINGW32__
+#include <stdlib.h>
+#endif
+
 #include "modules/particles/include/SkParticleEffect.h"
 
 #include "include/core/SkPaint.h"
@@ -503,9 +507,19 @@ const SkSL::UniformInfo* SkParticleEffect::uniformInfo() const {
     return fParams->fProgram ? fParams->fProgram->fUniformInfo.get() : nullptr;
 }
 
+#ifdef __MINGW32__
+static void dtor_gTypes(void) {
+    SkReflected::finalize();
+}
+#endif
+
 void SkParticleEffect::RegisterParticleTypes() {
     static SkOnce once;
     once([]{
+#ifdef __MINGW32__
+        SkReflected::initialize();
+        atexit(dtor_gTypes);
+#endif
         REGISTER_REFLECTED(SkReflected);
         SkParticleBinding::RegisterBindingTypes();
         SkParticleDrawable::RegisterDrawableTypes();

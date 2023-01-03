@@ -149,7 +149,11 @@ struct PlaceholderStyle {
 
 class TextStyle {
 public:
+#if defined(__MINGW32__)
+    TextStyle();
+#else
     TextStyle() = default;
+#endif
     TextStyle(const TextStyle& other) = default;
     TextStyle& operator=(const TextStyle& other) = default;
 
@@ -273,8 +277,11 @@ private:
             1.0f};
 
     SkFontStyle fFontStyle;
-
+#if defined(__MINGW32__)
+    std::vector<SkString> fFontFamilies;
+#else
     std::vector<SkString> fFontFamilies = *kDefaultFontFamilies;
+#endif
 
     SkScalar fFontSize = 14.0;
     SkScalar fHeight = 1.0;
@@ -307,7 +314,11 @@ private:
 
 typedef size_t TextIndex;
 typedef SkRange<size_t> TextRange;
+#if defined(__MINGW32__)
+#define EMPTY_TEXT EMPTY_RANGE
+#else
 const SkRange<size_t> EMPTY_TEXT = EMPTY_RANGE;
+#endif
 
 struct Block {
     Block() = default;
@@ -327,7 +338,11 @@ struct Block {
 typedef size_t BlockIndex;
 typedef SkRange<size_t> BlockRange;
 const size_t EMPTY_BLOCK = EMPTY_INDEX;
+#if defined(__MINGW32__)
+#define EMPTY_BLOCKS EMPTY_RANGE
+#else
 const SkRange<size_t> EMPTY_BLOCKS = EMPTY_RANGE;
+#endif
 
 struct Placeholder {
     Placeholder() = default;

@@ -125,8 +125,11 @@ template <typename T> struct SkRange {
     }
 };
 
+#if defined(__MINGW32__)
+#define EMPTY_RANGE SkRange<size_t>(EMPTY_INDEX, EMPTY_INDEX)
+#else
 const SkRange<size_t> EMPTY_RANGE = SkRange<size_t>(EMPTY_INDEX, EMPTY_INDEX);
-
+#endif
 
 enum class TextBaseline {
     kAlphabetic,

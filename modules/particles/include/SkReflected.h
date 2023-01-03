@@ -76,7 +76,11 @@ public:
     }
 
     static sk_sp<SkReflected> CreateInstance(const char* name) {
+#if defined(__MINGW32__)
+        for (const Type* type : *gTypes) {
+#else
         for (const Type* type : gTypes) {
+#endif
             if (0 == strcmp(name, type->fName)) {
                 return type->fFactory();
             }
@@ -88,16 +92,33 @@ public:
 
     static void VisitTypes(std::function<void(const Type*)> visitor);
 
+#ifdef __MINGW32__
+    static void initialize() {
+        gTypes = new SkSTArray<16, const Type*, true>();
+    }
+    static void finalize() {
+        delete gTypes;
+    }
+#endif
+
 protected:
     static void RegisterOnce(Type* type) {
         if (!type->fRegistered) {
+#if defined(__MINGW32__)
+            gTypes->push_back(type);
+#else
             gTypes.push_back(type);
+#endif
             type->fRegistered = true;
         }
     }
 
 private:
-    static SkSTArray<16, const Type*, true> gTypes;
+#if defined(__MINGW32__)
+    static SkSTArray<16, const Type*, true>* gTypes;
+#else
+    static SkSTArray<16, const Type*, true> gTypes;  
+#endif
 };
 
 #define REFLECTED(TYPE, BASE)                                    \

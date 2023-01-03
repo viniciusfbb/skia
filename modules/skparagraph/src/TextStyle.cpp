@@ -3,11 +3,27 @@
 #include "include/core/SkFontStyle.h"
 #include "modules/skparagraph/include/TextStyle.h"
 
+#ifdef __MINGW32__
+#include "include/private/SkOnce.h"
+#endif
+
 namespace skia {
 namespace textlayout {
 
+#if defined(__MINGW32__)
+const std::vector<SkString>* TextStyle::kDefaultFontFamilies;
+
+TextStyle::TextStyle() {
+    static SkOnce once;
+    once([]{
+        kDefaultFontFamilies = new std::vector<SkString>{SkString(DEFAULT_FONT_FAMILY)};
+    });
+    fFontFamilies = *kDefaultFontFamilies;
+}
+#else
 const std::vector<SkString>* TextStyle::kDefaultFontFamilies =
-        new std::vector<SkString>{SkString(DEFAULT_FONT_FAMILY)};
+        new std::vector<SkString>{SkString(DEFAULT_FONT_FAMILY)};  
+#endif
 
 TextStyle TextStyle::cloneForPlaceholder() {
     TextStyle result;
