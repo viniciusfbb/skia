@@ -299,9 +299,9 @@ config("default") {
       cflags += [ "arm64-apple-macos11" ]
       ldflags += [ "arm64-apple-macos11" ]
     } else {
-      asmflags += [ "x86_64-apple-macos10.13" ]
-      cflags += [ "x86_64-apple-macos10.13" ]
-      ldflags += [ "x86_64-apple-macos10.13" ]
+      asmflags += [ "x86_64-apple-macos10.9" ]
+      cflags += [ "x86_64-apple-macos10.9" ]
+      ldflags += [ "x86_64-apple-macos10.9" ]
     }
 
     # If there was a xcode_sysroot set in args or calculated then use it, else don't set anything
