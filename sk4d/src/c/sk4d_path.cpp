@@ -110,7 +110,7 @@ bool sk4d_path_is_oval(const sk_path_t* self, sk_rect_t* oval) {
 }
 
 bool sk4d_path_is_rect(const sk_path_t* self, sk_rect_t* rect) {
-    return AsPath(self)->isOval(AsRect(rect));
+    return AsPath(self)->isRect(AsRect(rect));
 }
 
 bool sk4d_path_is_rrect(const sk_path_t* self, sk_rrect_t* rrect) {
