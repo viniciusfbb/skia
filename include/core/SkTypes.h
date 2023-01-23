@@ -347,7 +347,7 @@
  *     SK_ALWAYS_INLINE void someMethod() { ... }   // should always be inlined
  */
 #if !defined(SK_ALWAYS_INLINE)
-#  if defined(SK_BUILD_FOR_WIN)
+#  if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
 #    define SK_ALWAYS_INLINE __forceinline
 #  else
 #    define SK_ALWAYS_INLINE SK_ATTRIBUTE(always_inline) inline
@@ -359,7 +359,7 @@
  * you can use SK_NEVER_INLINE to prevent inlining.
  */
 #if !defined(SK_NEVER_INLINE)
-#  if defined(SK_BUILD_FOR_WIN)
+#  if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
 #    define SK_NEVER_INLINE __declspec(noinline)
 #  else
 #    define SK_NEVER_INLINE SK_ATTRIBUTE(noinline)

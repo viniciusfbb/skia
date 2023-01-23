@@ -8,14 +8,17 @@
 #include "modules/particles/include/SkReflected.h"
 
 #if defined(__MINGW32__)
-SkSTArray<16, const SkReflected::Type*, true>* SkReflected::gTypes;
+SkSTArray<16, const SkReflected::Type*, true>* SkReflected::__get_gTypes() {
+    static SkSTArray<16, const Type*, true> gTypes;
+    return &gTypes;
+}
 #else
 SkSTArray<16, const SkReflected::Type*, true> SkReflected::gTypes;
 #endif
 
 void SkReflected::VisitTypes(std::function<void(const Type*)> visitor) {
 #if defined(__MINGW32__)
-    for (const Type* type : *gTypes) {
+    for (const Type* type : *__get_gTypes()) {
 #else
     for (const Type* type : gTypes) {
 #endif
