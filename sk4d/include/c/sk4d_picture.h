@@ -13,6 +13,8 @@
 
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
+SK4D_API size_t sk4d_picture_approximate_bytes_used(const sk_picture_t* self);
+SK4D_API int32_t sk4d_picture_approximate_op_count(const sk_picture_t* self, bool nested);
 SK4D_API void sk4d_picture_get_cull_rect(const sk_picture_t* self, /*out*/ sk_rect_t* result);
 SK4D_API sk_picture_t* sk4d_picture_make_from_stream(sk_stream_t* stream);
 SK4D_API sk_shader_t* sk4d_picture_make_shader(const sk_picture_t* self, sk_tilemode_t tile_mode_x, sk_tilemode_t tile_mode_y, sk_filtermode_t filter_mode, const sk_matrix_t* local_matrix, const sk_rect_t* tile_rect);
