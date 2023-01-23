@@ -9,6 +9,14 @@
 #include "include/c/sk4d_picture.h"
 #include "src/c/sk4d_mapping.h"
 
+size_t sk4d_picture_approximate_bytes_used(const sk_picture_t* self) {
+    return AsPicture(self)->approximateBytesUsed();
+}
+
+int32_t sk4d_picture_approximate_op_count(const sk_picture_t* self, bool nested) {
+    return AsPicture(self)->approximateOpCount(nested);
+}
+
 void sk4d_picture_get_cull_rect(const sk_picture_t* self, sk_rect_t* result) {
     *result = ToRect(AsPicture(self)->cullRect());
 }
