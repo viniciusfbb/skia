@@ -89,6 +89,9 @@ typedef struct sk_vertices_t                 sk_vertices_t;
 typedef struct sk_wstream_t                  sk_wstream_t;
 typedef struct sk_wstreamadapter_t           sk_wstreamadapter_t;
 
+#define INIT_WITH_PREVIOUS_SK_SAVE_LAYER_FLAG              (1 << 2)
+#define F16_COLOR_TYPE_SK_SAVE_LAYER_FLAG                  (1 << 4)
+
 #define UNDERLINE_THICKNESS_IS_VALID_SK_FONT_METRICS_FLAG  (1 << 0)
 #define UNDERLINE_POSITION_IS_VALID_SK_FONT_METRICS_FLAG   (1 << 1)
 #define STRIKEOUT_THICKNESS_IS_VALID_SK_FONT_METRICS_FLAG  (1 << 2)

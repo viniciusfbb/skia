@@ -232,12 +232,12 @@ int32_t sk4d_canvas_save(sk_canvas_t* self) {
     return AsCanvas(self)->save();
 }
 
-int32_t sk4d_canvas_save_layer(sk_canvas_t* self, const sk_rect_t* rect, const sk_paint_t* paint) {
-    return AsCanvas(self)->saveLayer(AsRect(rect), AsPaint(paint));
+int32_t sk4d_canvas_save_layer(sk_canvas_t* self, const sk_rect_t* bounds, const sk_paint_t* paint, const sk_imagefilter_t* backdrop, uint32_t flags) {
+    return AsCanvas(self)->saveLayer(SkCanvas::SaveLayerRec(AsRect(bounds), AsPaint(paint), AsImageFilter(backdrop), AsSaveLayerFlagsSet(flags)));
 }
 
-int32_t sk4d_canvas_save_layer_alpha(sk_canvas_t* self, const sk_rect_t* rect, uint8_t alpha) {
-    return AsCanvas(self)->saveLayerAlpha(AsRect(rect), alpha);
+int32_t sk4d_canvas_save_layer_alpha(sk_canvas_t* self, const sk_rect_t* bounds, uint8_t alpha) {
+    return AsCanvas(self)->saveLayerAlpha(AsRect(bounds), alpha);
 }
 
 void sk4d_canvas_scale(sk_canvas_t* self, float sx, float sy) {

@@ -68,8 +68,8 @@ SK4D_API void sk4d_canvas_restore_to_count(sk_canvas_t* self, int32_t save_count
 SK4D_API void sk4d_canvas_rotate(sk_canvas_t* self, float degrees);
 SK4D_API void sk4d_canvas_rotate2(sk_canvas_t* self, float degrees, float px, float py);
 SK4D_API int32_t sk4d_canvas_save(sk_canvas_t* self);
-SK4D_API int32_t sk4d_canvas_save_layer(sk_canvas_t* self, const sk_rect_t* rect, const sk_paint_t* paint);
-SK4D_API int32_t sk4d_canvas_save_layer_alpha(sk_canvas_t* self, const sk_rect_t* rect, uint8_t alpha);
+SK4D_API int32_t sk4d_canvas_save_layer(sk_canvas_t* self, const sk_rect_t* bounds, const sk_paint_t* paint, const sk_imagefilter_t* backdrop, uint32_t flags);
+SK4D_API int32_t sk4d_canvas_save_layer_alpha(sk_canvas_t* self, const sk_rect_t* bounds, uint8_t alpha);
 SK4D_API void sk4d_canvas_scale(sk_canvas_t* self, float sx, float sy);
 SK4D_API void sk4d_canvas_set_matrix(sk_canvas_t* self, const sk_matrix44_t* matrix);
 SK4D_API void sk4d_canvas_set_matrix2(sk_canvas_t* self, const sk_matrix_t* matrix);

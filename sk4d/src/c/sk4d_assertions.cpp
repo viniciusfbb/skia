@@ -83,6 +83,9 @@
  * ASSERTIONS OF DEFINITIONS
  */
 
+static_assert(static_cast<int>(SkCanvas::SaveLayerFlagsSet::kInitWithPrevious_SaveLayerFlag) == INIT_WITH_PREVIOUS_SK_SAVE_LAYER_FLAG, "");
+static_assert(static_cast<int>(SkCanvas::SaveLayerFlagsSet::kF16ColorType)                   == F16_COLOR_TYPE_SK_SAVE_LAYER_FLAG,     "");
+
 static_assert(static_cast<int>(SkFontMetrics::kUnderlineThicknessIsValid_Flag) == UNDERLINE_THICKNESS_IS_VALID_SK_FONT_METRICS_FLAG, "");
 static_assert(static_cast<int>(SkFontMetrics::kUnderlinePositionIsValid_Flag)  == UNDERLINE_POSITION_IS_VALID_SK_FONT_METRICS_FLAG,  "");
 static_assert(static_cast<int>(SkFontMetrics::kStrikeoutThicknessIsValid_Flag) == STRIKEOUT_THICKNESS_IS_VALID_SK_FONT_METRICS_FLAG, "");
