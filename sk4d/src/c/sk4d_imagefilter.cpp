@@ -11,6 +11,15 @@
 #include "include/c/sk4d_imagefilter.h"
 #include "src/c/sk4d_mapping.h"
 
+
+bool sk4d_imagefilter_can_compute_fast_bounds(const sk_imagefilter_t* self) {
+    return AsImageFilter(self)->canComputeFastBounds();
+}
+
+void sk4d_imagefilter_compute_fast_bounds(const sk_imagefilter_t* self, const sk_rect_t* bounds, sk_rect_t* result) {
+    *result = ToRect(AsImageFilter(self)->computeFastBounds(AsRect(*bounds)));
+}
+
 sk_imagefilter_t* sk4d_imagefilter_make_alpha_threshold(const sk_region_t* region, float inner_min, float outer_max, sk_imagefilter_t* input) {
     return ToImageFilter(SkImageFilters::AlphaThreshold(AsRegion(*region), inner_min, outer_max, sk_ref_sp(AsImageFilter(input))).release());
 }

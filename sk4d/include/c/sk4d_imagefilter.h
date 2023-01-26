@@ -13,6 +13,8 @@
 
 SK4D_C_PLUS_PLUS_BEGIN_GUARD
 
+SK4D_API bool sk4d_imagefilter_can_compute_fast_bounds(const sk_imagefilter_t* self);
+SK4D_API void sk4d_imagefilter_compute_fast_bounds(const sk_imagefilter_t* self, const sk_rect_t* bounds, /*out*/ sk_rect_t* result);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_alpha_threshold(const sk_region_t* region, float inner_min, float outer_max, sk_imagefilter_t* input);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_arithmetic(float k1, float k2, float k3, float k4, bool enforce_premultiplied_color, sk_imagefilter_t* background, sk_imagefilter_t* foreground, const sk_rect_t* crop_rect);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_blend(sk_blendmode_t mode, sk_imagefilter_t* background, sk_imagefilter_t* foreground, const sk_rect_t* crop_rect);
