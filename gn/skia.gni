@@ -101,7 +101,7 @@ declare_args() {
 
   if (is_android) {
     skia_use_vulkan = defined(ndk_api) && ndk_api >= 24
-  } else if (is_fuchsia) {
+  } else if (is_fuchsia || is_win) {
     skia_use_vulkan = true
   } else {
     skia_use_vulkan = false

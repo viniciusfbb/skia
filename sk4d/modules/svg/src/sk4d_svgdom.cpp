@@ -22,17 +22,17 @@ sk_svgsvg_t* sk4d_svgdom_get_root(const sk_svgdom_t* self) {
     return ToSVGSVG(AsSVGDOM(self)->getRoot());
 }
 
-sk_svgdom_t* sk4d_svgdom_make_from_file(const char file_name[]) {
+sk_svgdom_t* sk4d_svgdom_make_from_file(const char file_name[], sk_fontmgr_t* font_provider) {
     auto stream = SkStream::MakeFromFile(file_name);
     if (!stream)
         return nullptr;
     auto rp = skresources::DataURIResourceProviderProxy::Make(skresources::FileResourceProvider::Make(SkOSPath::Dirname(file_name), true), true);
-    return ToSVGDOM(SkSVGDOM::Builder().setResourceProvider(std::move(rp)).make(*stream).release());
+    return ToSVGDOM(SkSVGDOM::Builder().setResourceProvider(std::move(rp)).setFontManager(sk_ref_sp(AsFontMgr(font_provider))).make(*stream).release());
 }
 
-sk_svgdom_t* sk4d_svgdom_make_from_stream(sk_stream_t* stream, sk_resourceprovider_t* resource_provider) {
+sk_svgdom_t* sk4d_svgdom_make_from_stream(sk_stream_t* stream, sk_resourceprovider_t* resource_provider, sk_fontmgr_t* font_provider) {
     auto rp = skresources::DataURIResourceProviderProxy::Make(sk_ref_sp(AsResourceProvider(resource_provider)), true);
-    return ToSVGDOM(SkSVGDOM::Builder().setResourceProvider(std::move(rp)).make(AsStream(*stream)).release());
+    return ToSVGDOM(SkSVGDOM::Builder().setResourceProvider(std::move(rp)).setFontManager(sk_ref_sp(AsFontMgr(font_provider))).make(AsStream(*stream)).release());
 }
 
 void sk4d_svgdom_render(const sk_svgdom_t* self, sk_canvas_t* canvas) {

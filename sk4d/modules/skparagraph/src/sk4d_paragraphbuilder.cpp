@@ -29,11 +29,11 @@ sk_paragraphbuilder_t* sk4d_paragraphbuilder_create(const sk_paragraphstyle_t* p
     return ToParagraphBuilder(skia::textlayout::ParagraphBuilder::make(AsParagraphStyle(*paragraph_style), fontCollection).release());
 }
 
-sk_paragraphbuilder_t* sk4d_paragraphbuilder_create2(const sk_paragraphstyle_t* paragraph_style, sk_typefacefontprovider_t* font_provider, bool enable_font_fallback) {
+sk_paragraphbuilder_t* sk4d_paragraphbuilder_create2(const sk_paragraphstyle_t* paragraph_style, sk_fontmgr_t* font_provider, bool enable_font_fallback) {
     auto fontCollection = sk_make_sp<skia::textlayout::FontCollection>();
     if (enable_font_fallback)
         fontCollection->setDefaultFontManager(SkFontMgr::RefDefault());
-    fontCollection->setAssetFontManager(sk_ref_sp(AsTypefaceFontProvider(font_provider)));
+    fontCollection->setAssetFontManager(sk_ref_sp(AsFontMgr(font_provider)));
     return ToParagraphBuilder(skia::textlayout::ParagraphBuilder::make(AsParagraphStyle(*paragraph_style), fontCollection).release());
 }
 

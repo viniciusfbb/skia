@@ -15,7 +15,7 @@
 
 class GrVkGpu;
 
-#ifdef SK_BUILD_FOR_WIN
+#if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
 // Windows gives bogus warnings about inheriting asTexture/asRenderTarget via dominance.
 #pragma warning(push)
 #pragma warning(disable: 4250)
@@ -92,7 +92,7 @@ private:
     }
 };
 
-#ifdef SK_BUILD_FOR_WIN
+#if defined(SK_BUILD_FOR_WIN) && !defined(__MINGW32__)
 #pragma warning(pop)
 #endif
 

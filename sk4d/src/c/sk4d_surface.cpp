@@ -19,8 +19,19 @@ void sk4d_surface_flush(sk_surface_t* self) {
     AsSurface(self)->flush();
 }
 
-void sk4d_surface_flush_and_submit(sk_surface_t* self, bool sync_cpu) {
-    AsSurface(self)->flushAndSubmit(sync_cpu);
+void sk4d_surface_flush_and_submit(sk_surface_t* self, gr_backendsemaphore_t* semaphores[], int32_t count, const gr_backendsurfacemutablestate_t* new_state, bool sync_cpu) {
+    SK4D_ONLY_GPU(
+        GrFlushInfo info;
+        std::vector<GrBackendSemaphore> vector;
+        vector.reserve(count);
+        for (size_t i = 0; i < count; i++)
+            vector.emplace_back(*AsGrBackendSemaphore(semaphores[i]));
+        info.fNumSemaphores = count;
+        info.fSignalSemaphores = vector.data();
+        AsSurface(self)->flush(info, AsGrBackendSurfaceMutableState(new_state));
+        auto direct = GrAsDirectContext(AsSurface(self)->recordingContext());
+        if (direct)
+            direct->submit(sync_cpu);)
 }
 
 sk_canvas_t* sk4d_surface_get_canvas(sk_surface_t* self) {
@@ -70,4 +81,14 @@ sk_pixmap_t* sk4d_surface_peek_pixels(sk_surface_t* self) {
 
 bool sk4d_surface_read_pixels(sk_surface_t* self, const sk_pixmap_t* dest, int32_t src_x, int32_t src_y) {
     return AsSurface(self)->readPixels(AsPixmap(*dest), src_x, src_y);
+}
+
+void sk4d_surface_wait(sk_surface_t* self, const gr_backendsemaphore_t* semaphores[], int32_t count) {
+    SK4D_ONLY_GPU(
+        GrFlushInfo info;
+        std::vector<GrBackendSemaphore> vector;
+        vector.reserve(count);
+        for (size_t i = 0; i < count; i++)
+            vector.emplace_back(*AsGrBackendSemaphore(semaphores[i]));
+        AsSurface(self)->wait(count, vector.data());)
 }

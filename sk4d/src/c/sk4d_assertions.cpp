@@ -71,12 +71,12 @@
 
     #ifdef SK_GL
         #include "include/gpu/gl/GrGLInterface.h"
-	    #include "include/gpu/gl/GrGLTypes.h"
-	#endif
+        #include "include/gpu/gl/GrGLTypes.h"
+    #endif
 
-	#ifdef SK_VULKAN
+    #ifdef SK_VULKAN
         #include "include/gpu/vk/GrVkTypes.h"
-	#endif
+    #endif
 #endif
 
 /*
@@ -163,7 +163,7 @@ static_assert(sizeof(SkWStreamAdapter::Procs)           == sizeof(sk_wstreamadap
         static_assert(sizeof(GrGLTextureInfo)     == sizeof(gr_gl_textureinfo_t),     "");
     #endif
 
-	#ifdef SK_VULKAN
+    #ifdef SK_VULKAN
         static_assert(sizeof(GrVkYcbcrConversionInfo) == sizeof(gr_vk_ycbcrconversioninfo_t), "");
     #endif
 #endif
@@ -487,7 +487,7 @@ static_assert(std::is_base_of<SkRefCnt, SkTypeface>::value,      "");
 
     #ifdef SK_GL
         static_assert(std::is_base_of<SkRefCnt, GrGLInterface>::value, "");
-	#endif
+    #endif
 #endif
 
 

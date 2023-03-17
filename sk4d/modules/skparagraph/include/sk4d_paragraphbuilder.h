@@ -17,7 +17,7 @@ SK4D_API void sk4d_paragraphbuilder_add_placeholder(sk_paragraphbuilder_t* self,
 SK4D_API void sk4d_paragraphbuilder_add_text(sk_paragraphbuilder_t* self, const char text[]);
 SK4D_API sk_paragraph_t* sk4d_paragraphbuilder_build(sk_paragraphbuilder_t* self);
 SK4D_API sk_paragraphbuilder_t* sk4d_paragraphbuilder_create(const sk_paragraphstyle_t* paragraph_style);
-SK4D_API sk_paragraphbuilder_t* sk4d_paragraphbuilder_create2(const sk_paragraphstyle_t* paragraph_style, sk_typefacefontprovider_t* font_provider, bool enable_font_fallback);
+SK4D_API sk_paragraphbuilder_t* sk4d_paragraphbuilder_create2(const sk_paragraphstyle_t* paragraph_style, sk_fontmgr_t* font_provider, bool enable_font_fallback);
 SK4D_API void sk4d_paragraphbuilder_destroy(sk_paragraphbuilder_t* self);
 SK4D_API void sk4d_paragraphbuilder_pop(sk_paragraphbuilder_t* self);
 SK4D_API void sk4d_paragraphbuilder_push_style(sk_paragraphbuilder_t* self, const sk_textstyle_t* text_style);

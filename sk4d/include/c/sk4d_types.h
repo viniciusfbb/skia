@@ -55,6 +55,7 @@ typedef struct sk_colorspaceiccprofile_t     sk_colorspaceiccprofile_t;
 typedef struct sk_data_t                     sk_data_t;
 typedef struct sk_document_t                 sk_document_t;
 typedef struct sk_font_t                     sk_font_t;
+typedef struct sk_fontmgr_t                  sk_fontmgr_t;
 typedef struct sk_image_t                    sk_image_t;
 typedef struct sk_imagefilter_t              sk_imagefilter_t;
 typedef struct sk_maskfilter_t               sk_maskfilter_t;
@@ -410,26 +411,26 @@ typedef struct {
 } sk_color4f_t;
 
 typedef struct {
-	float m_11;
-	float m_12;
-	float m_13;
-	float m_14;
-	float m_15;
-	float m_21;
-	float m_22;
-	float m_23;
-	float m_24;
-	float m_25;
-	float m_31;
-	float m_32;
-	float m_33;
-	float m_34;
-	float m_35;
-	float m_41;
-	float m_42;
-	float m_43;
-	float m_44;
-	float m_45;
+    float m_11;
+    float m_12;
+    float m_13;
+    float m_14;
+    float m_15;
+    float m_21;
+    float m_22;
+    float m_23;
+    float m_24;
+    float m_25;
+    float m_31;
+    float m_32;
+    float m_33;
+    float m_34;
+    float m_35;
+    float m_41;
+    float m_42;
+    float m_43;
+    float m_44;
+    float m_45;
 } sk_colormatrix_t;
 
 typedef struct {
@@ -454,15 +455,15 @@ typedef struct {
 } sk_colorspacetransferfn_t;
 
 typedef struct {
-	float m_11;
-	float m_12;
-	float m_13;
-	float m_21;
-	float m_22;
-	float m_23;
-	float m_31;
-	float m_32;
-	float m_33;
+    float m_11;
+    float m_12;
+    float m_13;
+    float m_21;
+    float m_22;
+    float m_23;
+    float m_31;
+    float m_32;
+    float m_33;
 } sk_colorspacexyz_t;
 
 typedef struct {
@@ -505,6 +506,11 @@ typedef struct {
     int32_t        width;
     sk_fontslant_t slant;
 } sk_fontstyle_t;
+
+typedef struct {
+    sk_pixmap_t* pixmap;
+    int32_t      duration;
+} sk_frame_t;
 
 typedef struct {
     bool                     grayscale;
@@ -667,6 +673,8 @@ typedef struct {
 // Ganesh
 
 typedef struct gr_backendrendertarget_t         gr_backendrendertarget_t;
+typedef struct gr_backendsemaphore_t            gr_backendsemaphore_t;
+typedef struct gr_backendsurfacemutablestate_t  gr_backendsurfacemutablestate_t;
 typedef struct gr_backendtexture_t              gr_backendtexture_t;
 typedef struct gr_directcontext_t               gr_directcontext_t;
 typedef struct gr_persistentcache_t             gr_persistentcache_t;
@@ -748,9 +756,7 @@ typedef struct {
 
 // Ganesh - Vulkan
 
-typedef struct gr_vk_extensions_t              gr_vk_extensions_t;
-typedef struct gr_vk_physicaldevicefeatures_t  gr_vk_physicaldevicefeatures_t;
-typedef struct gr_vk_physicaldevicefeatures2_t gr_vk_physicaldevicefeatures2_t;
+typedef struct gr_vk_extensions_t gr_vk_extensions_t;
 
 #define NONCOHERENT_VK_ALLOC_FLAG      (1 << 0)
 #define MAPPABLE_VK_ALLOC_FLAG         (1 << 1)
@@ -758,7 +764,7 @@ typedef struct gr_vk_physicaldevicefeatures2_t gr_vk_physicaldevicefeatures2_t;
 
 typedef uint32_t gr_vk_bool32_t;
 typedef int32_t  gr_vk_chromalocation_t;
-typedef void*    gr_vk_device_t;
+typedef intptr_t gr_vk_device_t;
 typedef uint64_t gr_vk_devicememory_t;
 typedef uint64_t gr_vk_devicesize_t;
 typedef int32_t  gr_vk_filter_t;
@@ -768,12 +774,16 @@ typedef uint64_t gr_vk_image_t;
 typedef int32_t  gr_vk_imagelayout_t;
 typedef int32_t  gr_vk_imagetiling_t;
 typedef uint32_t gr_vk_imageusageflags_t;
-typedef void*    gr_vk_instance_t;
-typedef void*    gr_vk_physicaldevice_t;
-typedef void*    gr_vk_queue_t;
+typedef intptr_t gr_vk_instance_t;
+typedef intptr_t gr_vk_physicaldevice_t;
+typedef intptr_t gr_vk_queue_t;
 typedef int32_t  gr_vk_samplerycbcrmodelconversion_t;
 typedef int32_t  gr_vk_samplerycbcrrange_t;
+typedef uint64_t gr_vk_semaphore_t;
 typedef int32_t  gr_vk_sharingmode_t;
+
+typedef struct gr_vk_physicaldevicefeatures_t  gr_vk_physicaldevicefeatures_t;
+typedef struct gr_vk_physicaldevicefeatures2_t gr_vk_physicaldevicefeatures2_t;
 
 typedef void* (*gr_vk_get_proc) (void* context, const char name[], gr_vk_instance_t instance, gr_vk_device_t device);
 
@@ -791,7 +801,7 @@ typedef struct {
     gr_vk_device_t                         device;
     gr_vk_queue_t                          queue;
     uint32_t                               graphics_queue_index;
-    uint32_t                               max_version;
+    uint32_t                               max_api_version;
     const gr_vk_extensions_t*              extensions;
     const gr_vk_physicaldevicefeatures_t*  physical_device_features;
     const gr_vk_physicaldevicefeatures2_t* physical_device_features2;

@@ -89,10 +89,11 @@ sk_imagefilter_t* sk4d_imagefilter_make_matrix_transform(const sk_matrix_t* matr
 }
 
 sk_imagefilter_t* sk4d_imagefilter_make_merge(const sk_imagefilter_t* filters[], int32_t count, const sk_rect_t* crop_rect) {
-    std::vector<sk_sp<SkImageFilter>> imageFilters(count);
+    std::vector<sk_sp<SkImageFilter>> vector;
+    vector.reserve(count);
     for (int32_t i = 0; i < count; i++)
-        imageFilters[i] = sk_ref_sp(AsImageFilter(filters[i]));
-    return ToImageFilter(SkImageFilters::Merge(imageFilters.data(), count, AsRect(crop_rect)).release());
+        vector.emplace_back(sk_ref_sp(AsImageFilter(filters[i])));
+    return ToImageFilter(SkImageFilters::Merge(vector.data(), count, AsRect(crop_rect)).release());
 }
 
 sk_imagefilter_t* sk4d_imagefilter_make_offset(float dx, float dy, sk_imagefilter_t* input, const sk_rect_t* crop_rect) {

@@ -19,8 +19,8 @@ SK4D_API double sk4d_skottieanimation_get_in_point(const sk_skottieanimation_t* 
 SK4D_API double sk4d_skottieanimation_get_out_point(const sk_skottieanimation_t* self);
 SK4D_API void sk4d_skottieanimation_get_size(const sk_skottieanimation_t* self, /*out*/ sk_size_t* result);
 SK4D_API const char* sk4d_skottieanimation_get_version(const sk_skottieanimation_t* self);
-SK4D_API sk_skottieanimation_t* sk4d_skottieanimation_make_from_file(const char file_name[]);
-SK4D_API sk_skottieanimation_t* sk4d_skottieanimation_make_from_stream(sk_stream_t* stream, sk_resourceprovider_t* resource_provider);
+SK4D_API sk_skottieanimation_t* sk4d_skottieanimation_make_from_file(const char file_name[], sk_fontmgr_t* font_provider);
+SK4D_API sk_skottieanimation_t* sk4d_skottieanimation_make_from_stream(sk_stream_t* stream, sk_resourceprovider_t* resource_provider, sk_fontmgr_t* font_provider);
 SK4D_API void sk4d_skottieanimation_ref(const sk_skottieanimation_t* self);
 SK4D_API void sk4d_skottieanimation_render(const sk_skottieanimation_t* self, sk_canvas_t* canvas, const sk_rect_t* dest, uint32_t render_flags);
 SK4D_API void sk4d_skottieanimation_seek_frame(sk_skottieanimation_t* self, double tick);

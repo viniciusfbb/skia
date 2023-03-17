@@ -28,6 +28,7 @@
 #include "include/core/SkEncodedImageFormat.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
+#include "include/core/SkFontMgr.h"
 #include "include/core/SkFontStyle.h"
 #include "include/core/SkFontTypes.h"
 #include "include/core/SkGraphics.h"
@@ -89,6 +90,8 @@
 #include "include/effects/SkTableColorFilter.h"
 #include "include/effects/SkTableMaskFilter.h"
 #include "include/effects/SkTrimPathEffect.h"
+#include "include/encode/SkEncoder.h"
+#include "include/encode/SkWebpEncoder.h"
 #include "include/pathops/SkPathOps.h"
 #include "include/svg/SkSVGCanvas.h"
 #include "include/utils/SkAnimCodecPlayer.h"
@@ -156,6 +159,7 @@ SK4D_DEF_CLASS_MAP(SkData, sk_data_t, Data)
 SK4D_DEF_CLASS_MAP(SkDocument, sk_document_t, Document)
 SK4D_DEF_CLASS_MAP(SkFont, sk_font_t, Font)
 SK4D_DEF_CLASS_MAP(SkFontMetrics, sk_fontmetrics_t, FontMetrics)
+SK4D_DEF_CLASS_MAP(SkFontMgr, sk_fontmgr_t, FontMgr)
 SK4D_DEF_CLASS_MAP(SkHighContrastConfig, sk_highcontrastconfig_t, HighContrastConfig)
 SK4D_DEF_CLASS_MAP(SkImage, sk_image_t, Image)
 SK4D_DEF_CLASS_MAP(SkImageFilter, sk_imagefilter_t, ImageFilter)
@@ -253,6 +257,13 @@ static inline SkFontStyle AsFontStyle(const sk_fontstyle_t* style) {
 }
 static inline sk_fontstyle_t ToFontStyle(const SkFontStyle& style) {
     return { style.weight(), style.width(), ToFontSlant(style.slant()) };
+}
+
+static inline SkEncoder::Frame AsFrame(const sk_frame_t* frame) {
+    return {
+        *AsPixmap(frame->pixmap),
+        frame->duration,
+    };
 }
 
 static inline SkImageInfo AsImageInfo(const sk_imageinfo_t* info) {
@@ -364,7 +375,9 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
 
     #include "include/gpu/Gr4DContextOptions.h"
     #include "include/gpu/Gr4DShaderErrorHandler.h"
+    #include "include/gpu/GrBackendSemaphore.h"
     #include "include/gpu/GrBackendSurface.h"
+    #include "include/gpu/GrBackendSurfaceMutableState.h"
     #include "include/gpu/GrContextOptions.h"
     #include "include/gpu/GrDirectContext.h"    
     #include "include/gpu/GrTypes.h"
@@ -377,11 +390,14 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
     SK4D_DEF_ENUM_MAP(GrSurfaceOrigin, gr_surfaceorigin_t, GrSurfaceOrigin)
 
     SK4D_DEF_CLASS_MAP(GrBackendRenderTarget, gr_backendrendertarget_t, GrBackendRenderTarget)
+    SK4D_DEF_CLASS_MAP(GrBackendSemaphore, gr_backendsemaphore_t, GrBackendSemaphore)
+    SK4D_DEF_CLASS_MAP(GrBackendSurfaceMutableState, gr_backendsurfacemutablestate_t, GrBackendSurfaceMutableState)
     SK4D_DEF_CLASS_MAP(GrBackendTexture, gr_backendtexture_t, GrBackendTexture)
     SK4D_DEF_CLASS_MAP(GrContextOptions::PersistentCache, gr_persistentcache_t, GrPersistentCache)
     SK4D_DEF_CLASS_MAP(GrDirectContext, gr_directcontext_t, GrDirectContext)
     SK4D_DEF_CLASS_MAP(GrPersistentCacheBaseClass, gr_persistentcachebaseclass_t, GrPersistentCacheBaseClass)
     SK4D_DEF_CLASS_MAP(GrPersistentCacheBaseClass::Procs, gr_persistentcachebaseclass_procs_t, GrPersistentCacheBaseClassProcs)
+
     SK4D_DEF_CLASS_MAP(GrShaderErrorHandlerBaseClass, gr_shadererrorhandlerbaseclass_t, GrShaderErrorHandlerBaseClass)
     SK4D_DEF_CLASS_MAP(GrShaderErrorHandlerBaseClass::Procs, gr_shadererrorhandlerbaseclass_procs_t, GrShaderErrorHandlerBaseClassProcs)
     SK4D_DEF_CLASS_MAP(skgpu::ShaderErrorHandler, gr_shadererrorhandler_t, GrShaderErrorHandler)
@@ -455,6 +471,7 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
         SK4D_DEF_TYPE_MAP(VkInstance, gr_vk_instance_t, VkInstance)
         SK4D_DEF_TYPE_MAP(VkPhysicalDevice, gr_vk_physicaldevice_t, VkPhysicalDevice)
         SK4D_DEF_TYPE_MAP(VkQueue, gr_vk_queue_t, VkQueue)
+        SK4D_DEF_TYPE_MAP(VkSemaphore, gr_vk_semaphore_t, VkSemaphore)
 
         SK4D_DEF_ENUM_MAP(VkFormat, gr_vk_format_t, VkFormat)
         SK4D_DEF_ENUM_MAP(VkImageLayout, gr_vk_imagelayout_t, VkImageLayout)
@@ -482,7 +499,7 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
             result.fDevice             = AsVkDevice(context->device);
             result.fQueue              = AsVkQueue(context->queue);
             result.fGraphicsQueueIndex = context->graphics_queue_index;
-            result.fMaxAPIVersion      = context->max_version;
+            result.fMaxAPIVersion      = context->max_api_version;
             result.fVkExtensions       = AsGrVkExtensions(context->extensions);
             result.fDeviceFeatures     = AsVkPhysicalDeviceFeatures(context->physical_device_features);
             result.fDeviceFeatures2    = AsVkPhysicalDeviceFeatures2(context->physical_device_features2);
