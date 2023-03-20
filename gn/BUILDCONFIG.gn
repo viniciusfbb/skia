@@ -16,8 +16,8 @@ declare_args() {
   is_component_build = false
   ndk = ""
 
-  # Android 7.0, Nougat
-  ndk_api = 24
+  # Android 5.0, Lollipop
+  ndk_api = 21
 
   sanitize = ""
 

@@ -99,9 +99,7 @@ declare_args() {
     skia_gl_standard = ""
   }
 
-  if (is_android) {
-    skia_use_vulkan = defined(ndk_api) && ndk_api >= 24
-  } else if (is_fuchsia || is_win) {
+  if (is_android || is_fuchsia || is_win) {
     skia_use_vulkan = true
   } else {
     skia_use_vulkan = false
