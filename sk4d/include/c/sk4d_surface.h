@@ -29,6 +29,7 @@ SK4D_API sk_surface_t* sk4d_surface_make_render_target(gr_directcontext_t* conte
 SK4D_API sk_pixmap_t* sk4d_surface_peek_pixels(sk_surface_t* self);
 SK4D_API bool sk4d_surface_read_pixels(sk_surface_t* self, const sk_pixmap_t* dest, int32_t src_x, int32_t src_y);
 SK4D_API void sk4d_surface_wait(sk_surface_t* self, const gr_backendsemaphore_t* semaphores[], int32_t count);
+SK4D_API void sk4d_surface_write_pixels(sk_surface_t* self, const sk_pixmap_t* src, int32_t dest_x, int32_t dest_y);
 
 SK4D_C_PLUS_PLUS_END_GUARD
 

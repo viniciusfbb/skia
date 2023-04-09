@@ -411,6 +411,15 @@ public:
     BuilderUniform uniform(std::string_view name) { return { this, fEffect->findUniform(name) }; }
     BuilderChild child(std::string_view name) { return { this, fEffect->findChild(name) }; }
 
+    void setUniform(std::string_view name, const void* data) {
+        auto uniform = fEffect->findUniform(name);
+        if (!uniform) {
+            SkDEBUGFAIL("Assigning to missing variable");
+        } else {
+            memcpy(SkTAddOffset<void>(this->writableUniformData(), uniform->offset), data, uniform->sizeInBytes()); 
+        }
+    }
+
 protected:
     SkRuntimeEffectBuilder() = delete;
     explicit SkRuntimeEffectBuilder(sk_sp<SkRuntimeEffect> effect)
