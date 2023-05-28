@@ -26,6 +26,7 @@
 #include "include/core/SkData.h"
 #include "include/core/SkDocument.h"
 #include "include/core/SkEncodedImageFormat.h"
+#include "include/core/SkFlattenable.h"
 #include "include/core/SkFont.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkFontMgr.h"
@@ -157,6 +158,7 @@ SK4D_DEF_CLASS_MAP(SkColorSpacePrimaries, sk_colorspaceprimaries_t, ColorSpacePr
 SK4D_DEF_CLASS_MAP(SkCubicResampler, sk_cubicresampler_t, CubicResampler)
 SK4D_DEF_CLASS_MAP(SkData, sk_data_t, Data)
 SK4D_DEF_CLASS_MAP(SkDocument, sk_document_t, Document)
+SK4D_DEF_CLASS_MAP(SkFlattenable, sk_flattenable_t, Flattenable)
 SK4D_DEF_CLASS_MAP(SkFont, sk_font_t, Font)
 SK4D_DEF_CLASS_MAP(SkFontMetrics, sk_fontmetrics_t, FontMetrics)
 SK4D_DEF_CLASS_MAP(SkFontMgr, sk_fontmgr_t, FontMgr)
@@ -188,7 +190,10 @@ SK4D_DEF_CLASS_MAP(SkRegion::Iterator, sk_regioniterator_t, RegionIterator)
 SK4D_DEF_CLASS_MAP(SkRegion::Spanerator, sk_regionspanerator_t, RegionSpanerator)
 SK4D_DEF_CLASS_MAP(SkRRect, sk_rrect_t, RRect);
 SK4D_DEF_CLASS_MAP(SkRSXform, sk_rotationscalematrix_t, RotationScaleMatrix)
+SK4D_DEF_CLASS_MAP(SkRuntimeBlendBuilder, sk_runtimeblendbuilder_t, RuntimeBlendBuilder)
 SK4D_DEF_CLASS_MAP(SkRuntimeEffect, sk_runtimeeffect_t, RuntimeEffect)
+SK4D_DEF_CLASS_MAP(SkRuntimeEffectBuilder, sk_runtimeeffectbuilder_t, RuntimeEffectBuilder)
+SK4D_DEF_CLASS_MAP(SkRuntimeShaderBuilder, sk_runtimeshaderbuilder_t, RuntimeShaderBuilder)
 SK4D_DEF_CLASS_MAP(SkSamplingOptions, sk_samplingoptions_t, SamplingOptions)
 SK4D_DEF_CLASS_MAP(SkShader, sk_shader_t, Shader)
 SK4D_DEF_CLASS_MAP(SkSize, sk_size_t, Size)
@@ -387,6 +392,7 @@ static inline SkPDF::Metadata AsPDFMetadata(const sk_pdfmetadata_t* metadata) {
     SK4D_DEF_ENUM_MAP(GrContextOptions::ShaderCacheStrategy, gr_shadercachestrategy_t, GrShaderCacheStrategy)
     SK4D_DEF_ENUM_MAP(GrMipmapped, bool, GrMipmapped)
     SK4D_DEF_ENUM_MAP(GrProtected, bool, GrProtected)
+    SK4D_DEF_ENUM_MAP(GrRenderable, bool, GrRenderable)
     SK4D_DEF_ENUM_MAP(GrSurfaceOrigin, gr_surfaceorigin_t, GrSurfaceOrigin)
 
     SK4D_DEF_CLASS_MAP(GrBackendRenderTarget, gr_backendrendertarget_t, GrBackendRenderTarget)

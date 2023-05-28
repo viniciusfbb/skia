@@ -16,6 +16,7 @@ SK4D_C_PLUS_PLUS_BEGIN_GUARD
 SK4D_API sk_shader_t* sk4d_shader_make_blend(sk_blendmode_t mode, sk_shader_t* dest, sk_shader_t* src);
 SK4D_API sk_shader_t* sk4d_shader_make_color(sk_color_t color);
 SK4D_API sk_shader_t* sk4d_shader_make_color2(const sk_color4f_t* color, sk_colorspace_t* color_space);
+SK4D_API sk_shader_t* sk4d_shader_make_empty(void);
 SK4D_API sk_shader_t* sk4d_shader_make_gradient_linear(const sk_point_t points[2], const sk_color_t colors[], const float positions[], int32_t count, sk_tilemode_t tile_mode, const sk_matrix_t* local_matrix);
 SK4D_API sk_shader_t* sk4d_shader_make_gradient_linear2(const sk_point_t points[2], const sk_color4f_t colors[], sk_colorspace_t* color_space, const float positions[], int32_t count, sk_tilemode_t tile_mode, const sk_matrix_t* local_matrix);
 SK4D_API sk_shader_t* sk4d_shader_make_gradient_radial(const sk_point_t* center, float radius, const sk_color_t colors[], const float positions[], int32_t count, sk_tilemode_t tile_mode, const sk_matrix_t* local_matrix);

@@ -21,6 +21,10 @@ sk_shader_t* sk4d_shader_make_color2(const sk_color4f_t* color, sk_colorspace_t*
     return ToShader(SkShaders::Color(AsColor4f(*color), sk_ref_sp(AsColorSpace(color_space))).release());
 }
 
+sk_shader_t* sk4d_shader_make_empty(void) {
+    return ToShader(SkShaders::Empty().release());
+}
+
 sk_shader_t* sk4d_shader_make_gradient_linear(const sk_point_t points[2], const sk_color_t colors[], const float positions[], int32_t count, sk_tilemode_t tile_mode, const sk_matrix_t* local_matrix) {
     SkMatrix m;
     if (local_matrix)

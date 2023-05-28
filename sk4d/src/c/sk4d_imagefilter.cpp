@@ -6,7 +6,9 @@
  * found in the LICENSE file.
  */
 
+#include <string_view>
 #include <vector>
+#include <utility>
 
 #include "include/c/sk4d_imagefilter.h"
 #include "src/c/sk4d_mapping.h"
@@ -113,6 +115,22 @@ sk_imagefilter_t* sk4d_imagefilter_make_point_lit_diffuse(const sk_point3_t* loc
 
 sk_imagefilter_t* sk4d_imagefilter_make_point_lit_specular(const sk_point3_t* location, sk_color_t light_color, float surface_scale, float ks, float shininess, sk_imagefilter_t* input, const sk_rect_t* crop_rect) {
     return ToImageFilter(SkImageFilters::PointLitSpecular(AsPoint3(*location), light_color, surface_scale, ks, shininess, sk_ref_sp(AsImageFilter(input)), AsRect(crop_rect)).release());
+}
+
+sk_imagefilter_t* sk4d_imagefilter_make_runtime_shader(const sk_runtimeshaderbuilder_t* effect_builder, const char child[], sk_imagefilter_t* input) {
+    return ToImageFilter(SkImageFilters::RuntimeShader(AsRuntimeShaderBuilder(*effect_builder), child, sk_ref_sp(AsImageFilter(input))).release());
+}
+
+sk_imagefilter_t* sk4d_imagefilter_make_runtime_shader2(const sk_runtimeshaderbuilder_t* effect_builder, const char* children[], sk_imagefilter_t* inputs[], int32_t count) {
+    std::vector<std::string_view> vector;
+    std::vector<sk_sp<SkImageFilter>> filters;
+    vector.reserve(count);
+    filters.reserve(count);
+    for (int32_t i = 0; i < count; i++) {
+        vector.emplace_back(children[i]);
+        filters.emplace_back(sk_ref_sp(AsImageFilter(inputs[i])));
+    }
+    return ToImageFilter(SkImageFilters::RuntimeShader(AsRuntimeShaderBuilder(*effect_builder), vector.data(), filters.data(), count).release());
 }
 
 sk_imagefilter_t* sk4d_imagefilter_make_shader(sk_shader_t* shader, bool dither, const sk_rect_t* crop_rect) {

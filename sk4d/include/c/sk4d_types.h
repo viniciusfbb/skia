@@ -54,6 +54,7 @@ typedef struct sk_colorspace_t               sk_colorspace_t;
 typedef struct sk_colorspaceiccprofile_t     sk_colorspaceiccprofile_t;
 typedef struct sk_data_t                     sk_data_t;
 typedef struct sk_document_t                 sk_document_t;
+typedef struct sk_flattenable_t              sk_flattenable_t;
 typedef struct sk_font_t                     sk_font_t;
 typedef struct sk_fontmgr_t                  sk_fontmgr_t;
 typedef struct sk_image_t                    sk_image_t;
@@ -76,7 +77,10 @@ typedef struct sk_regioncliperator_t         sk_regioncliperator_t;
 typedef struct sk_regioniterator_t           sk_regioniterator_t;
 typedef struct sk_regionspanerator_t         sk_regionspanerator_t;
 typedef struct sk_rrect_t                    sk_rrect_t;
+typedef struct sk_runtimeblendbuilder_t      sk_runtimeblendbuilder_t;
 typedef struct sk_runtimeeffect_t            sk_runtimeeffect_t;
+typedef struct sk_runtimeeffectbuilder_t     sk_runtimeeffectbuilder_t;
+typedef struct sk_runtimeshaderbuilder_t     sk_runtimeshaderbuilder_t;
 typedef struct sk_shader_t                   sk_shader_t;
 typedef struct sk_stream_t                   sk_stream_t;
 typedef struct sk_streamadapter_t            sk_streamadapter_t;
@@ -411,26 +415,26 @@ typedef struct {
 } sk_color4f_t;
 
 typedef struct {
-    float m_11;
-    float m_12;
-    float m_13;
-    float m_14;
-    float m_15;
-    float m_21;
-    float m_22;
-    float m_23;
-    float m_24;
-    float m_25;
-    float m_31;
-    float m_32;
-    float m_33;
-    float m_34;
-    float m_35;
-    float m_41;
-    float m_42;
-    float m_43;
-    float m_44;
-    float m_45;
+	float m_11;
+	float m_12;
+	float m_13;
+	float m_14;
+	float m_15;
+	float m_21;
+	float m_22;
+	float m_23;
+	float m_24;
+	float m_25;
+	float m_31;
+	float m_32;
+	float m_33;
+	float m_34;
+	float m_35;
+	float m_41;
+	float m_42;
+	float m_43;
+	float m_44;
+	float m_45;
 } sk_colormatrix_t;
 
 typedef struct {
@@ -455,15 +459,15 @@ typedef struct {
 } sk_colorspacetransferfn_t;
 
 typedef struct {
-    float m_11;
-    float m_12;
-    float m_13;
-    float m_21;
-    float m_22;
-    float m_23;
-    float m_31;
-    float m_32;
-    float m_33;
+	float m_11;
+	float m_12;
+	float m_13;
+	float m_21;
+	float m_22;
+	float m_23;
+	float m_31;
+	float m_32;
+	float m_33;
 } sk_colorspacexyz_t;
 
 typedef struct {

@@ -92,3 +92,7 @@ void sk4d_surface_wait(sk_surface_t* self, const gr_backendsemaphore_t* semaphor
             vector.emplace_back(*AsGrBackendSemaphore(semaphores[i]));
         AsSurface(self)->wait(count, vector.data());)
 }
+
+void sk4d_surface_write_pixels(sk_surface_t* self, const sk_pixmap_t* src, int32_t dest_x, int32_t dest_y) {
+    AsSurface(self)->writePixels(AsPixmap(*src), dest_x, dest_y);
+}

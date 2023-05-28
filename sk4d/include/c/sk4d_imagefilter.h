@@ -37,6 +37,8 @@ SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_offset(float dx, float dy, sk_i
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_picture(sk_picture_t* picture, const sk_rect_t* crop_rect);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_point_lit_diffuse(const sk_point3_t* location, sk_color_t light_color, float surface_scale, float kd, sk_imagefilter_t* input, const sk_rect_t* crop_rect);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_point_lit_specular(const sk_point3_t* location, sk_color_t light_color, float surface_scale, float ks, float shininess, sk_imagefilter_t* input, const sk_rect_t* crop_rect);
+SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_runtime_shader(const sk_runtimeshaderbuilder_t* effect_builder, const char child[], sk_imagefilter_t* input);
+SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_runtime_shader2(const sk_runtimeshaderbuilder_t* effect_builder, const char* children[], sk_imagefilter_t* inputs[], int32_t count);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_shader(sk_shader_t* shader, bool dither, const sk_rect_t* crop_rect);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_spot_lit_diffuse(const sk_point3_t* location, const sk_point3_t* target, float falloff_exponent, float cutoff_angle, sk_color_t light_color, float surface_scale, float kd, sk_imagefilter_t* input, const sk_rect_t* crop_rect);
 SK4D_API sk_imagefilter_t* sk4d_imagefilter_make_spot_lit_specular(const sk_point3_t* location, const sk_point3_t* target, float falloff_exponent, float cutoff_angle, sk_color_t light_color, float surface_scale, float ks, float shininess, sk_imagefilter_t* input, const sk_rect_t* crop_rect);
