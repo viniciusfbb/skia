@@ -13,14 +13,15 @@
 
 #include "src/webp/encode.h"
 
-#if !defined(WEBP_REDUCE_SIZE)
-
 #include <assert.h>
 #include <stdlib.h>
 
 #include "src/enc/vp8i_enc.h"
+
+#if !defined(WEBP_REDUCE_SIZE)
 #include "src/utils/rescaler_utils.h"
 #include "src/utils/utils.h"
+#endif  // !defined(WEBP_REDUCE_SIZE)
 
 #define HALVE(x) (((x) + 1) >> 1)
 
@@ -56,6 +57,7 @@ static int AdjustAndCheckRectangle(const WebPPicture* const pic,
   return 1;
 }
 
+#if !defined(WEBP_REDUCE_SIZE)
 int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
   if (src == NULL || dst == NULL) return 0;
   if (src == dst) return 1;
@@ -81,6 +83,7 @@ int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
   }
   return 1;
 }
+#endif  // !defined(WEBP_REDUCE_SIZE)
 
 int WebPPictureIsView(const WebPPicture* picture) {
   if (picture == NULL) return 0;
@@ -120,6 +123,7 @@ int WebPPictureView(const WebPPicture* src,
   return 1;
 }
 
+#if !defined(WEBP_REDUCE_SIZE)
 //------------------------------------------------------------------------------
 // Picture cropping
 
@@ -133,7 +137,9 @@ int WebPPictureCrop(WebPPicture* pic,
   PictureGrabSpecs(pic, &tmp);
   tmp.width = width;
   tmp.height = height;
-  if (!WebPPictureAlloc(&tmp)) return 0;
+  if (!WebPPictureAlloc(&tmp)) {
+    return WebPEncodingSetError(pic, tmp.error_code);
+  }
 
   if (!pic->use_argb) {
     const int y_offset = top * pic->y_stride + left;
@@ -208,26 +214,28 @@ int WebPPictureRescale(WebPPicture* picture, int width, int height) {
   prev_height = picture->height;
   if (!WebPRescalerGetScaledDimensions(
           prev_width, prev_height, &width, &height)) {
-    return 0;
+    return WebPEncodingSetError(picture, VP8_ENC_ERROR_BAD_DIMENSION);
   }
 
   PictureGrabSpecs(picture, &tmp);
   tmp.width = width;
   tmp.height = height;
-  if (!WebPPictureAlloc(&tmp)) return 0;
+  if (!WebPPictureAlloc(&tmp)) {
+    return WebPEncodingSetError(picture, tmp.error_code);
+  }
 
   if (!picture->use_argb) {
     work = (rescaler_t*)WebPSafeMalloc(2ULL * width, sizeof(*work));
     if (work == NULL) {
       WebPPictureFree(&tmp);
-      return 0;
+      return WebPEncodingSetError(picture, VP8_ENC_ERROR_OUT_OF_MEMORY);
     }
     // If present, we need to rescale alpha first (for AlphaMultiplyY).
     if (picture->a != NULL) {
       WebPInitAlphaProcessing();
       if (!RescalePlane(picture->a, prev_width, prev_height, picture->a_stride,
                         tmp.a, width, height, tmp.a_stride, work, 1)) {
-        return 0;
+        return WebPEncodingSetError(picture, VP8_ENC_ERROR_BAD_DIMENSION);
       }
     }
 
@@ -242,14 +250,14 @@ int WebPPictureRescale(WebPPicture* picture, int width, int height) {
         !RescalePlane(picture->v, HALVE(prev_width), HALVE(prev_height),
                       picture->uv_stride, tmp.v, HALVE(width), HALVE(height),
                       tmp.uv_stride, work, 1)) {
-      return 0;
+      return WebPEncodingSetError(picture, VP8_ENC_ERROR_BAD_DIMENSION);
     }
     AlphaMultiplyY(&tmp, 1);
   } else {
     work = (rescaler_t*)WebPSafeMalloc(2ULL * width * 4, sizeof(*work));
     if (work == NULL) {
       WebPPictureFree(&tmp);
-      return 0;
+      return WebPEncodingSetError(picture, VP8_ENC_ERROR_OUT_OF_MEMORY);
     }
     // In order to correctly interpolate colors, we need to apply the alpha
     // weighting first (black-matting), scale the RGB values, and remove
@@ -259,7 +267,7 @@ int WebPPictureRescale(WebPPicture* picture, int width, int height) {
     if (!RescalePlane((const uint8_t*)picture->argb, prev_width, prev_height,
                       picture->argb_stride * 4, (uint8_t*)tmp.argb, width,
                       height, tmp.argb_stride * 4, work, 4)) {
-      return 0;
+      return WebPEncodingSetError(picture, VP8_ENC_ERROR_BAD_DIMENSION);
     }
     AlphaMultiplyARGB(&tmp, 1);
   }
@@ -273,23 +281,6 @@ int WebPPictureRescale(WebPPicture* picture, int width, int height) {
 
 int WebPPictureCopy(const WebPPicture* src, WebPPicture* dst) {
   (void)src;
-  (void)dst;
-  return 0;
-}
-
-int WebPPictureIsView(const WebPPicture* picture) {
-  (void)picture;
-  return 0;
-}
-
-int WebPPictureView(const WebPPicture* src,
-                    int left, int top, int width, int height,
-                    WebPPicture* dst) {
-  (void)src;
-  (void)left;
-  (void)top;
-  (void)width;
-  (void)height;
   (void)dst;
   return 0;
 }
