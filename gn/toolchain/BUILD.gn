@@ -102,10 +102,19 @@ toolchain("msvc") {
 
   bin = "$win_vc/Tools/MSVC/$win_toolchain_version/bin/HostX64/$target_cpu"
 
+  target_flag = ""
   env_setup = ""
   if (target_cpu == "arm64") {
+    if (is_clang) {
+      target_flag = "-target aarch64-pc-windows-msvc"
+    }
+
     # ARM64 compiler is incomplete - it relies on DLLs located in the host toolchain directory.
     env_setup = "$shell set \"PATH=%PATH%;$win_vc\\Tools\\MSVC\\$win_toolchain_version\\bin\\HostX64\\x64\" && "
+  } else if (target_cpu == "x64" &&  is_clang) {
+    target_flag = "-target x86_64-pc-windows-msvc"
+  } else if (target_cpu == "x86" &&  is_clang) {
+    target_flag = "-target i686-pc-windows-msvc"
   }
 
   cl_m32_flag = ""
@@ -148,7 +157,7 @@ toolchain("msvc") {
     pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
     # Label names may have spaces so pdbname must be quoted.
-    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+    command = "$env_setup $cc_wrapper $cl $target_flag /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_c}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     depsformat = "msvc"
     outputs =
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.obj" ]
@@ -160,7 +169,7 @@ toolchain("msvc") {
     pdbname = "{{target_out_dir}}/{{label_name}}_c.pdb"
 
     # Label names may have spaces so pdbname must be quoted.
-    command = "$env_setup $cc_wrapper $cl /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
+    command = "$env_setup $cc_wrapper $cl $target_flag /nologo /showIncludes /FC {{defines}} {{include_dirs}} {{cflags}} $cl_m32_flag {{cflags_cc}} /c {{source}} /Fo{{output}} /Fd\"$pdbname\""
     depsformat = "msvc"
     outputs =
         [ "{{source_out_dir}}/{{target_output_name}}.{{source_name_part}}.obj" ]

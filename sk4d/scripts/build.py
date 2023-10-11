@@ -50,6 +50,8 @@ else:
 
 if IS_WIN and ARCH == 'x64':
     HOST = 'win64'
+if IS_WIN and ARCH == 'arm64':
+    HOST = 'winarm64'
 elif IS_LINUX and ARCH == 'x64':
     HOST = 'linux64'
 elif IS_MAC and ARCH == 'x64':
@@ -64,23 +66,33 @@ MODES = [
     'debug'
 ]
 
+GN_HOST = {
+    'linux64': 'linux64',
+    'osx64': 'osx64',
+    'win64': 'win64',
+    'winarm64': 'win64'
+}
+
 NDK_HOST = {
     'linux64': 'linux-x86_64',
     'osx64': 'darwin-x86_64',
-    'win64': 'windows-x86_64'
+    'win64': 'windows-x86_64',
+    'winarm64': 'windows-x86_64'
 }
 
 NINJA_HOST = {
     'linux64': 'linux',
     'osx64': 'mac',
-    'win64': 'win'
+    'win64': 'win',
+    'winarm64': 'win'
 }
 
 TARGETS = {
     'linux64': ['linux64', 'android', 'android64'],
     'osx64': ['osx64', 'osxarm64', 'iosdevice64', 'iossimarm64', 'android', 'android64'],
     'osxarm64': ['osx64', 'osxarm64', 'iosdevice64', 'iossimarm64', 'android', 'android64'],
-    'win64': ['win32', 'win64', 'android', 'android64']
+    'win64': ['win32', 'win64', 'android', 'android64'],
+    'winarm64': ['win32', 'win64', 'android', 'android64']
 }
 
 TARGET_STATIC_LIBRARY = ['iosdevice64']
@@ -283,7 +295,7 @@ def gn_gen(script_executable, target, is_debug, ndk, clang_win, win_vc, win_sdk,
             gn_gen_args += ' xcode_sysroot="%s"' % xcode_sysroot
     target_dir = os.path.join(TARGETS_NAME[target], 'Release' if not is_debug else 'Debug')
     temp_dir = os.path.join(ROOT_DIR, 'temp', target_dir)
-    result, output = call_executable([os.path.join(ROOT_DIR, 'bin', HOST, 'gn.exe' if IS_WIN else 'gn'), 'gen',
+    result, output = call_executable([os.path.join(ROOT_DIR, 'bin', GN_HOST[HOST], 'gn.exe' if IS_WIN else 'gn'), 'gen',
                                       '--script-executable=%s' % script_executable, temp_dir, '--args=%s' % gn_gen_args,
                                       '--root=%s' % ROOT_DIR])
     if result:
