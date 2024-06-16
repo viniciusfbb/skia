@@ -95,7 +95,7 @@ TARGETS = {
     'winarm64': ['win32', 'win64', 'android', 'android64']
 }
 
-TARGET_STATIC_LIBRARY = ['iosdevice64']
+TARGET_STATIC_LIBRARY = ['android', 'android64', 'iosdevice64', 'iossimarm64', 'osx64', 'osxarm64']
 
 TARGETS_CPU = {
     'win32': 'x86',
@@ -137,24 +137,24 @@ TARGETS_OUT = {
     'win32': 'sk4d.dll',
     'win64': 'sk4d.dll',
     'linux64': 'libsk4d.so',
-    'android': 'libsk4d.so',
-    'android64': 'libsk4d.so',
+    'android': 'libsk4d.a',
+    'android64': 'libsk4d.a',
     'iosdevice64': 'libsk4d.a',
-    'iossimarm64': 'libsk4d.dylib',
-    'osx64': 'libsk4d.dylib',
-    'osxarm64': 'libsk4d.dylib'
+    'iossimarm64': 'libsk4d.a',
+    'osx64': 'libsk4d.a',
+    'osxarm64': 'libsk4d.a'
 }
 
 TARGETS_OUT_TEMP = {
     'win32': 'sk4d.dll',
     'win64': 'sk4d.dll',
     'linux64': 'sk4d.so',
-    'android': 'sk4d.so',
-    'android64': 'sk4d.so',
+    'android': 'sk4d.a',
+    'android64': 'sk4d.a',
     'iosdevice64': 'sk4d.a',
-    'iossimarm64': 'sk4d.dylib',
-    'osx64': 'sk4d.dylib',
-    'osxarm64': 'sk4d.dylib'
+    'iossimarm64': 'sk4d.a',
+    'osx64': 'sk4d.a',
+    'osxarm64': 'sk4d.a'
 }
 
 
